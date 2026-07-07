@@ -11,7 +11,7 @@ import time
 """
 TODO:
 Coordinate snapping /
-Nether coordines
+Nether coordines /
 Ring additions
 """
 
@@ -44,6 +44,8 @@ def intersect_lines(g1, g2, c1, c2):
 	z_snap = z - (z % 16) + 8
 	return x_snap, z_snap
 
+def nether_coords(x, z):
+	return x//8, z//8
 
 
 while True:
@@ -69,5 +71,6 @@ while True:
 		constant1 = get_constant(x1, z1, gradient1)
 		constant2 = get_constant(x2, z2, gradient2)
 
-		x, z = intersect_lines(gradient1, gradient2, constant1, constant2)
-		print(x, z)
+		c_x, c_z = intersect_lines(gradient1, gradient2, constant1, constant2)
+		print(f"Overworld coords: {c_x, c_z}")
+		print(f"Nether coords: {nether_coords(c_x, c_z)}")
