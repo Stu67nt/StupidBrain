@@ -8,7 +8,12 @@ import time
 # TEst pos 1
 # /execute in minecraft:overworld run tp @s 1920.48 75.00 -1259.10 139.88 -31.30
 # /execute in minecraft:overworld run tp @s 1960.78 68.00 -1301.01 132.21 -31.74
-
+"""
+TODO:
+Coordinate snapping /
+Nether coordines
+Ring additions
+"""
 
 def read_clipboard():
 	result = pyperclip.paste()
@@ -33,9 +38,13 @@ def get_constant(x, z, gradient):
 	return z-(gradient*x)
 
 def intersect_lines(g1, g2, c1, c2):
-	x = (c2-c1)/(g1-g2)
-	z = (g1*x)+c1
-	return x, z
+	x = int((c2-c1)/(g1-g2))
+	z = int((g1*x)+c1)
+	x_snap = x - (x % 16) + 8
+	z_snap = z - (z % 16) + 8
+	return x_snap, z_snap
+
+
 
 while True:
 	print("waiting one")
