@@ -3,6 +3,8 @@ import math
 import keyboard
 import time
 
+from numba.np.numpy_support import re_typestr
+
 # /execute in minecraft:overworld run tp @s 235.84 69.00 -195.63 -134.79 -31.61
 
 # TEst pos 1
@@ -14,6 +16,16 @@ Coordinate snapping /
 Nether coordines /
 Ring additions
 """
+
+RING_REGIONS = [[1280, 2816],  # Ring 1 - 3 Strongholds
+				[4352, 5888],  # Ring 2 - 6 Strongholds
+				[7424, 8960],  # Ring 3 - 10 Strongholds
+				[10496, 12032],# Ring 4 - 15 Strongholds
+				[13568, 15104],# Ring 5 - 21 Strongholds
+				[16640, 18176],# Ring 6 - 28 Strongholds
+				[19712, 21248],# Ring 7 - 36 Strongholds
+				[22784, 24320] # Ring 8 - 9 Strongholds
+				]
 
 def read_clipboard():
 	result = pyperclip.paste()
@@ -47,6 +59,12 @@ def intersect_lines(g1, g2, c1, c2):
 def nether_coords(x, z):
 	return x//8, z//8
 
+def validate_result(x, z):
+	displacement = math.sqrt(x*x + z*z)
+	for i, ring in enumerate(RING_REGIONS):
+		if ring[0] < displacement < ring[1]:
+			return i+1
+	return -1
 
 while True:
 	print("waiting one")
@@ -74,3 +92,8 @@ while True:
 		c_x, c_z = intersect_lines(gradient1, gradient2, constant1, constant2)
 		print(f"Overworld coords: {c_x, c_z}")
 		print(f"Nether coords: {nether_coords(c_x, c_z)}")
+		ring = validate_result(c_x, c_z)
+		if ring != -1:
+			print(f"Calculated to be in ring {ring}")
+		else:
+			print(f"Likely an incorrect mesaurement")
