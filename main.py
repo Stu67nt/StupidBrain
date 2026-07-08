@@ -2,8 +2,7 @@ import pyperclip
 import math
 import keyboard
 import time
-
-from numba.np.numpy_support import re_typestr
+import scipy
 
 # /execute in minecraft:overworld run tp @s 235.84 69.00 -195.63 -134.79 -31.61
 
@@ -14,18 +13,53 @@ from numba.np.numpy_support import re_typestr
 TODO:
 Coordinate snapping /
 Nether coordines /
-Ring additions
+Ring additions /
 """
 
-RING_REGIONS = [[1280, 2816],  # Ring 1 - 3 Strongholds
-				[4352, 5888],  # Ring 2 - 6 Strongholds
-				[7424, 8960],  # Ring 3 - 10 Strongholds
-				[10496, 12032],# Ring 4 - 15 Strongholds
-				[13568, 15104],# Ring 5 - 21 Strongholds
-				[16640, 18176],# Ring 6 - 28 Strongholds
-				[19712, 21248],# Ring 7 - 36 Strongholds
-				[22784, 24320] # Ring 8 - 9 Strongholds
+RING_REGIONS = [[1280, 2816, 3],   # Ring 1 - 3 Strongholds
+				[4352, 5888, 6],   # Ring 2 - 6 Strongholds
+				[7424, 8960, 10],  # Ring 3 - 10 Strongholds
+				[10496, 12032, 15],# Ring 4 - 15 Strongholds
+				[13568, 15104, 21],# Ring 5 - 21 Strongholds
+				[16640, 18176, 28],# Ring 6 - 28 Strongholds
+				[19712, 21248, 36],# Ring 7 - 36 Strongholds
+				[22784, 24320, 9]  # Ring 8 - 9 Strongholds
 				]
+
+def precompute_g_set():
+	def integrand(x_1, a): return (math.pow(1 + ((a * x_1) / (15 * math.sqrt(2))), 4.5) * math.pow(1 - ((a * x_1) / (15 * math.sqrt(2))),4.5))
+
+	G_set = []
+	for region in RING_REGIONS:
+		ring_set = [0, 0, []]
+		min_dist, max_dist = region[0], region[1]
+		ring_set[0] = scipy.integrate.quad(integrand, (-15 * math.sqrt(2)) / min_dist, (15 * math.sqrt(2)) / min_dist, args=(min_dist))
+		ring_set[1] = 1/(2*math.pi*(max_dist-min_dist))
+		for x in range(-max_dist, max_dist + 1, 16):
+			x_coord = x - (x % 16) + 8
+			for z in range(-max_dist, max_dist + 1, 16):
+				z_coord = z - (z % 16) + 8
+				displacement = math.sqrt(x_coord * x_coord + z_coord * z_coord)
+				if min_dist <= displacement <= max_dist:
+					ring_set[2].append([x_coord, z_coord])
+		G_set.append(ring_set)
+
+	i = 0
+	for reigon in G_set:
+		raw_weight_total = 0
+		for chunk in reigon[2]:
+			displacement = math.sqrt((chunk[0] * chunk[0]) + (chunk[1] * chunk[1]))
+			angle = math.atan2(-chunk[0], chunk[1])
+			raw_weight = reigon[1]*(256/displacement)
+			chunk.append(displacement)
+			chunk.append(angle)
+			chunk.append(raw_weight)
+			raw_weight_total += raw_weight
+		for chunk in reigon[2]:
+			chunk.append(RING_REGIONS[i][2]*((chunk[4])/raw_weight_total))
+			i+=1
+
+	return G_set
 
 def read_clipboard():
 	result = pyperclip.paste()
