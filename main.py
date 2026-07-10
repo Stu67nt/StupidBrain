@@ -17,20 +17,55 @@ Ring additions /
 """
 
 RING_REGIONS = [[1280, 2816, 3],   # Ring 1 - 3 Strongholds
-				[4352, 5888, 6],   # Ring 2 - 6 Strongholds
-				[7424, 8960, 10],  # Ring 3 - 10 Strongholds
-				[10496, 12032, 15],# Ring 4 - 15 Strongholds
-				[13568, 15104, 21],# Ring 5 - 21 Strongholds
-				[16640, 18176, 28],# Ring 6 - 28 Strongholds
-				[19712, 21248, 36],# Ring 7 - 36 Strongholds
-				[22784, 24320, 9]  # Ring 8 - 9 Strongholds
+				[4352, 5888, 6]
 				]
 
-def precompute_g_set():
-	def integrand(x_1, a): return (math.pow(1 + ((a * x_1) / (15 * math.sqrt(2))), 4.5) * math.pow(1 - ((a * x_1) / (15 * math.sqrt(2))),4.5))
+def integrand(x_1, a):
+	val = (a * x_1) / (15 * math.sqrt(2))
+	if val <= -1 or val >= 1:
+		return 0
+	return math.pow(1 + val, 4.5) * math.pow(1 - val,4.5)
 
+def diff_ring_integrand(chunk_angle, chunk_displacement, min_dist, max_dist):
+	denom = math.sin(-chunk_displacement)
+	# prevent divide by 0 errors
+	if round(denom, 8) == 0:
+		return 0
+
+	lb = chunk_displacement * math.sin(chunk_angle) / denom
+	ub = chunk_displacement * math.sin(math.pi+chunk_angle) / denom
+
+	if lb > ub:
+		ub, lb = lb, ub
+
+	def radial_cdf(R):
+		if R < min_dist: return 0.0
+		if R > max_dist: return 1.0
+		return (R - min_dist)/(max_dist - min_dist)
+
+	return (radial_cdf(ub) - radial_cdf(lb))/(2*math.pi)
+
+def precompute_chance_calc(x_coord, z_coord, reigon_num):
+	displacement = math.sqrt(pow(x_coord,2)+pow(z_coord, 2))
+	p_closest = 1
+	for i, region in enumerate(RING_REGIONS):
+		if i != reigon_num:
+			min_dist, max_dist, strng_count = region[0], region[1], region[2]
+			if displacement <= min_dist:
+				p_further = 0.0
+			elif displacement >= max_dist:
+				p_further = 1.0
+			else:
+				p_further = (displacement - min_dist) / (max_dist - min_dist)
+			p_closer = math.pow(1-p_further, strng_count)
+			p_closest *= p_closer
+	return p_closest
+
+def precompute_g_set():
 	G_set = []
+	i = 0
 	for region in RING_REGIONS:
+		raw_weight_total = 0
 		ring_set = [0, 0, []]
 		min_dist, max_dist = region[0], region[1]
 		ring_set[0] = scipy.integrate.quad(integrand, (-15 * math.sqrt(2)) / min_dist, (15 * math.sqrt(2)) / min_dist, args=(min_dist))
@@ -39,27 +74,69 @@ def precompute_g_set():
 			x_coord = x - (x % 16) + 8
 			for z in range(-max_dist, max_dist + 1, 16):
 				z_coord = z - (z % 16) + 8
-				displacement = math.sqrt(x_coord * x_coord + z_coord * z_coord)
+				displacement = math.sqrt(pow(x_coord, 2) + pow(z_coord, 2))
 				if min_dist <= displacement <= max_dist:
-					ring_set[2].append([x_coord, z_coord])
+					closest_factor = precompute_chance_calc(x_coord, z_coord, i)
+					angle = math.atan2(-x_coord, z_coord)
+					raw_weight = ring_set[1] * (256 / displacement) * closest_factor
+					ring_set[2].append([[x_coord, z_coord], displacement, angle, raw_weight])
+					raw_weight_total += raw_weight
+		if raw_weight_total > 0:
+			for chunk in ring_set[2]:
+				chunk.append(region[2]*((chunk[3])/raw_weight_total))
+		else:
+			for chunk in ring_set[2]:
+				chunk.append(0)
+		i += 1
 		G_set.append(ring_set)
-
-	i = 0
-	for reigon in G_set:
-		raw_weight_total = 0
-		for chunk in reigon[2]:
-			displacement = math.sqrt((chunk[0] * chunk[0]) + (chunk[1] * chunk[1]))
-			angle = math.atan2(-chunk[0], chunk[1])
-			raw_weight = reigon[1]*(256/displacement)
-			chunk.append(displacement)
-			chunk.append(angle)
-			chunk.append(raw_weight)
-			raw_weight_total += raw_weight
-		for chunk in reigon[2]:
-			chunk.append(RING_REGIONS[i][2]*((chunk[4])/raw_weight_total))
-			i+=1
-
 	return G_set
+
+def find_probablilty(player_pos: tuple, g_set, strd_dev, throws=1):
+	"""
+	:param player_pos: Expects a tuple of following (x, y, degree yaw angle)
+	:param g_set:
+	:param strd_dev:
+	:param throws:
+	:return:
+	"""
+	player_angle = math.radians(player_pos[2])
+	strd_dev = math.radians(strd_dev)
+	i = 0
+	total_prob = 0
+	for reigon in g_set:
+		for chunk in reigon[2]:
+			optimal_angle = math.atan2(-(chunk[0][0]-player_pos[0]), chunk[0][1]-player_pos[1])
+			angle_diff = player_angle - optimal_angle
+			if angle_diff > math.pi:
+				angle_diff = angle_diff - 2*math.pi
+			elif angle_diff < -math.pi:
+				angle_diff = 2*math.pi + angle_diff
+			chance = (1/(strd_dev*math.sqrt(2 * math.pi)))*math.exp(-(pow(angle_diff, 2))/(2*pow(strd_dev, 2)))
+			displacement = math.sqrt(pow(chunk[0][0]-player_pos[0], 2) + pow(chunk[0][1]-player_pos[1], 2))
+			constraint = integrand(displacement, RING_REGIONS[i][0])/reigon[0][0]
+			if throws <= 0:
+				chunk[4] = chunk[4]*chance*constraint
+			else:
+				chunk[4] = chunk[4]*chance
+			total_prob += chunk[4]
+		i+=1
+
+	for reigon in g_set:
+		for chunk in reigon[2]:
+			chunk[4] /= total_prob
+	return g_set
+
+def extract_best(g_set):
+	best_val = -1
+	x = 0
+	z = 0
+	for reigon in g_set:
+		for chunk in reigon[2]:
+			if chunk[4] > best_val:
+				best_val = chunk[4]
+				x = chunk[0][0]
+				z = chunk[0][1]
+	return x,z, best_val
 
 def read_clipboard():
 	result = pyperclip.paste()
@@ -100,34 +177,63 @@ def validate_result(x, z):
 			return i+1
 	return -1
 
-while True:
-	print("waiting one")
-	keyboard.wait("f3+c")
-	time.sleep(0.1)
-	command1 = read_clipboard()
-	print("waiting two")
-	keyboard.wait("f3+c")
-	time.sleep(0.1)
-	command2 = read_clipboard()
+def main():
+	while True:
+		print("waiting one")
+		keyboard.wait("f3+c")
+		time.sleep(0.1)
+		command1 = read_clipboard()
+		print("waiting two")
+		keyboard.wait("f3+c")
+		time.sleep(0.1)
+		command2 = read_clipboard()
 
-	if command1 != "invalid" and command2 != "invalid":
-		x1, y1, z1, yaw1, pitch1 = parse_result(command1)
-		x2, y2, z2, yaw2, pitch2 = parse_result(command2)
+		if command1 != "invalid" and command2 != "invalid":
+			x1, y1, z1, yaw1, pitch1 = parse_result(command1)
+			x2, y2, z2, yaw2, pitch2 = parse_result(command2)
 
-		print(x1, y1, z1, yaw1, pitch1)
-		print(x2, y2, z2, yaw2, pitch2)
+			print(x1, y1, z1, yaw1, pitch1)
+			print(x2, y2, z2, yaw2, pitch2)
 
-		gradient1 = get_gradient(yaw1)
-		gradient2 = get_gradient(yaw2)
+			gradient1 = get_gradient(yaw1)
+			gradient2 = get_gradient(yaw2)
 
-		constant1 = get_constant(x1, z1, gradient1)
-		constant2 = get_constant(x2, z2, gradient2)
+			constant1 = get_constant(x1, z1, gradient1)
+			constant2 = get_constant(x2, z2, gradient2)
 
-		c_x, c_z = intersect_lines(gradient1, gradient2, constant1, constant2)
-		print(f"Overworld coords: {c_x, c_z}")
-		print(f"Nether coords: {nether_coords(c_x, c_z)}")
-		ring = validate_result(c_x, c_z)
-		if ring != -1:
-			print(f"Calculated to be in ring {ring}")
-		else:
-			print(f"Likely an incorrect mesaurement")
+			c_x, c_z = intersect_lines(gradient1, gradient2, constant1, constant2)
+			print(f"Overworld coords: {c_x, c_z}")
+			print(f"Nether coords: {nether_coords(c_x, c_z)}")
+			ring = validate_result(c_x, c_z)
+			if ring != -1:
+				print(f"Calculated to be in ring {ring}")
+			else:
+				print(f"Likely an incorrect mesaurement")
+
+def main_probabilistic():
+	g_set = precompute_g_set()
+	count = 0
+	while True:
+		print("waiting one")
+		keyboard.wait("f3+c")
+		time.sleep(0.1)
+		command1 = read_clipboard()
+
+		if command1 != "invalid":
+			x1, y1, z1, yaw1, pitch1 = parse_result(command1)
+
+			print(x1, y1, z1, yaw1, pitch1)
+
+			g_set = find_probablilty((x1, z1, yaw1), g_set, 0.1)
+			count += 1
+			c_x, c_z, chance= extract_best(g_set)
+			print(f"Overworld coords: {c_x, c_z}")
+			print(f"Nether coords: {nether_coords(c_x, c_z)}")
+			print(chance)
+			ring = validate_result(c_x, c_z)
+			if ring != -1:
+				print(f"Calculated to be in ring {ring}")
+			else:
+				print(f"Likely an incorrect mesaurement")
+
+main()
