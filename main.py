@@ -17,6 +17,12 @@ optimise precompute (turns out its alr pretty decent)
 
 RING_REGIONS = [[1280, 2816, 3],   # Ring 1 - 3 Strongholds
 				[4352, 5888, 6],   # Ring 2 - 6 Strongholds
+				[7424, 8960, 10],  # Ring 3 - 10 Strongholds
+				[10496, 12032, 15],  # Ring 4 - 15 Strongholds
+				[13568, 15104, 21],  # Ring 5 - 21 Strongholds
+				[16640, 18176, 28],  # Ring 6 - 28 Strongholds
+				[19712, 21248, 36],  # Ring 7 - 36 Strongholds
+				[22784, 24320, 9]  # Ring 8 - 9 Strongholds
 				]
 
 def integrand(x_1, a):
