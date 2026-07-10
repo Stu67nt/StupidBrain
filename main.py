@@ -11,13 +11,12 @@ import scipy
 # /execute in minecraft:overworld run tp @s 1960.78 68.00 -1301.01 132.21 -31.74
 """
 TODO:
-Coordinate snapping /
-Nether coordines /
-Ring additions /
+optimise precompute (turns out its alr pretty decent)
+
 """
 
 RING_REGIONS = [[1280, 2816, 3],   # Ring 1 - 3 Strongholds
-				[4352, 5888, 6]
+				[4352, 5888, 6],   # Ring 2 - 6 Strongholds
 				]
 
 def integrand(x_1, a):
@@ -66,10 +65,12 @@ def precompute_g_set():
 	i = 0
 	for region in RING_REGIONS:
 		raw_weight_total = 0
-		ring_set = [0, 0, []]
+		ring_set = {"angle_density": 0,
+					"joint_desnity": 0,
+					"chunk_info": []}
 		min_dist, max_dist = region[0], region[1]
-		ring_set[0] = scipy.integrate.quad(integrand, (-15 * math.sqrt(2)) / min_dist, (15 * math.sqrt(2)) / min_dist, args=(min_dist))
-		ring_set[1] = 1/(2*math.pi*(max_dist-min_dist))
+		ring_set["angle_density"] = scipy.integrate.quad(integrand, (-15 * math.sqrt(2)) / min_dist, (15 * math.sqrt(2)) / min_dist, args=(min_dist))
+		ring_set["joint_desnity"] = 1/(2*math.pi*(max_dist-min_dist))
 		for x in range(-max_dist, max_dist + 1, 16):
 			x_coord = x - (x % 16) + 8
 			for z in range(-max_dist, max_dist + 1, 16):
@@ -78,17 +79,21 @@ def precompute_g_set():
 				if min_dist <= displacement <= max_dist:
 					closest_factor = precompute_chance_calc(x_coord, z_coord, i)
 					angle = math.atan2(-x_coord, z_coord)
-					raw_weight = ring_set[1] * (256 / displacement) * closest_factor
-					ring_set[2].append([[x_coord, z_coord], displacement, angle, raw_weight])
+					raw_weight = ring_set["joint_desnity"] * (256 / displacement) * closest_factor
+					ring_set["chunk_info"].append({"coords": [x_coord, z_coord],
+												   "displacment": displacement,
+												   "angle": angle,
+												   "weight": raw_weight})
 					raw_weight_total += raw_weight
 		if raw_weight_total > 0:
-			for chunk in ring_set[2]:
-				chunk.append(region[2]*((chunk[3])/raw_weight_total))
+			for chunk in ring_set["chunk_info"]:
+				chunk["weight"] = region[2]*((chunk["weight"])/raw_weight_total)
 		else:
-			for chunk in ring_set[2]:
-				chunk.append(0)
+			for chunk in ring_set["chunk_info"]:
+				chunk["weight"] = 0
 		i += 1
 		G_set.append(ring_set)
+		print(f"{i}/{len(RING_REGIONS)}")
 	return G_set
 
 def find_probablilty(player_pos: tuple, g_set, strd_dev, throws=1):
@@ -104,26 +109,22 @@ def find_probablilty(player_pos: tuple, g_set, strd_dev, throws=1):
 	i = 0
 	total_prob = 0
 	for reigon in g_set:
-		for chunk in reigon[2]:
-			optimal_angle = math.atan2(-(chunk[0][0]-player_pos[0]), chunk[0][1]-player_pos[1])
+		for chunk in reigon["chunk_info"]:
+			optimal_angle = math.atan2(-(chunk["coords"][0]-player_pos[0]), chunk["coords"][1]-player_pos[1])
 			angle_diff = player_angle - optimal_angle
 			if angle_diff > math.pi:
 				angle_diff = angle_diff - 2*math.pi
 			elif angle_diff < -math.pi:
 				angle_diff = 2*math.pi + angle_diff
 			chance = (1/(strd_dev*math.sqrt(2 * math.pi)))*math.exp(-(pow(angle_diff, 2))/(2*pow(strd_dev, 2)))
-			displacement = math.sqrt(pow(chunk[0][0]-player_pos[0], 2) + pow(chunk[0][1]-player_pos[1], 2))
-			constraint = integrand(displacement, RING_REGIONS[i][0])/reigon[0][0]
-			if throws <= 0:
-				chunk[4] = chunk[4]*chance*constraint
-			else:
-				chunk[4] = chunk[4]*chance
-			total_prob += chunk[4]
+			displacement = math.sqrt(pow(chunk["coords"][0]-player_pos[0], 2) + pow(chunk["coords"][1]-player_pos[1], 2))
+			chunk["weight"] *= chance
+			total_prob += chunk["weight"]
 		i+=1
 
 	for reigon in g_set:
-		for chunk in reigon[2]:
-			chunk[4] /= total_prob
+		for chunk in reigon["chunk_info"]:
+			chunk["weight"] /= total_prob
 	return g_set
 
 def extract_best(g_set):
@@ -131,11 +132,11 @@ def extract_best(g_set):
 	x = 0
 	z = 0
 	for reigon in g_set:
-		for chunk in reigon[2]:
-			if chunk[4] > best_val:
-				best_val = chunk[4]
-				x = chunk[0][0]
-				z = chunk[0][1]
+		for chunk in reigon["chunk_info"]:
+			if chunk["weight"] > best_val:
+				best_val = chunk["weight"]
+				x = chunk["coords"][0]
+				z = chunk["coords"][1]
 	return x,z, best_val
 
 def read_clipboard():
@@ -223,10 +224,11 @@ def main_probabilistic():
 			x1, y1, z1, yaw1, pitch1 = parse_result(command1)
 
 			print(x1, y1, z1, yaw1, pitch1)
-
+			t1 = time.time()
 			g_set = find_probablilty((x1, z1, yaw1), g_set, 0.1)
 			count += 1
 			c_x, c_z, chance= extract_best(g_set)
+			print(time.time() - t1)
 			print(f"Overworld coords: {c_x, c_z}")
 			print(f"Nether coords: {nether_coords(c_x, c_z)}")
 			print(chance)
@@ -236,4 +238,4 @@ def main_probabilistic():
 			else:
 				print(f"Likely an incorrect mesaurement")
 
-main()
+main_probabilistic()
