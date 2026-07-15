@@ -25,7 +25,13 @@ Ring additions /
 
 RING_REGIONS = [
 	[1280, 2816, 3],  # Ring 1 - 3 Strongholds
-
+	[4352, 5888, 6],  # Ring 2 - 6 Strongholds
+	[7424, 8960, 10],  # Ring 3 - 10 Strongholds
+	[10496, 12032, 15],  # Ring 4 - 15 Strongholds
+	[13568, 15104, 21],  # Ring 5 - 21 Strongholds
+	[16640, 18176, 28],  # Ring 6 - 28 Strongholds
+	[19712, 21248, 36],  # Ring 7 - 36 Strongholds
+	[22784, 24320, 9]  # Ring 8 - 9 Strongholds
 				]
 
 def integrand(x_1, a):
@@ -35,27 +41,22 @@ def integrand(x_1, a):
 	return math.pow(1 + val, 4.5) * math.pow(1 - val,4.5)
 
 def diff_ring_integrand(chunk_angle, player_angle, player_displacement, player_chunk_displacement, min_dist, max_dist):
-	angle_gap = numpy.sin(player_angle-chunk_angle)
-	# prevent divide by 0 errors
+	angle_gap = math.sin(player_angle-chunk_angle)
+	# prevent divside by 0 errors
 	if round(angle_gap, 8) == 0:
 		return 0
-	arg = (player_displacement/player_chunk_displacement) * angle_gap
-	if arg > 1:
-		arg = 1
-	elif arg < -1:
-		arg = -1
-	beta = math.asin(arg)
+	arg = numpy.clip((player_displacement/player_chunk_displacement) * angle_gap , -1, 1)
+	beta = numpy.asin(arg)
 
-	lb = player_chunk_displacement * math.sin(beta-(player_angle-chunk_angle))/angle_gap
-	ub = player_chunk_displacement * math.sin(math.pi-beta-(player_angle-chunk_angle))/angle_gap
+	lb = player_chunk_displacement * numpy.sin(beta-(player_angle-chunk_angle))/angle_gap
+	ub = player_chunk_displacement * numpy.sin(math.pi-beta-(player_angle-chunk_angle))/angle_gap
 
-	if lb > ub:
-		ub, lb = lb, ub
+	t_ub = numpy.maximum(ub, lb)
+	t_lb = numpy.minimum(ub, lb)
 
-	def radial_cdf(R):
-		if R < min_dist: return 0.0
-		if R > max_dist: return 1.0
-		return (R - min_dist)/(max_dist - min_dist)
+	def radial_cdf(displacement_arr):
+		displacement_arr = numpy.clip(displacement_arr, min_dist, max_dist)
+		return (displacement_arr-min_dist)/(max_dist-min_dist)
 
 	return (radial_cdf(ub) - radial_cdf(lb))/(2*math.pi)
 
@@ -124,14 +125,14 @@ def find_probablilty(player_pos: tuple, g_set, strd_dev, throws=1):
 		angle_diff = ((-1*optimal_angle)+player_look_angle+math.pi)%(2*math.pi)-math.pi
 		chance = (1/(strd_dev*math.sqrt(2 * math.pi)))*numpy.exp(-(numpy.pow(angle_diff, 2))/(2*pow(strd_dev, 2)))
 		placement_correction = numpy.ones(len(reigon[2]))
-
+		player_chunk_displacement_arr = numpy.zeros(len(reigon[2]))
 		for j, comparison_set in enumerate(g_set):
+			print("hai")
 			min_dist, max_dist, count = RING_REGIONS[j][0], RING_REGIONS[j][1], RING_REGIONS[j][2]
 			if i != j:
-				for i_2, chunk in enumerate(reigon[2]):
-					player_chunk_displacement = math.sqrt(pow(chunk["x_coord"]-player_pos[0], 2)+pow(chunk["z_coord"]-player_pos[1], 2))
-					chance_closer = scipy.integrate.quad(diff_ring_integrand, 0, 2*math.pi, args = (player_pos_angle, player_displacement, player_chunk_displacement, min_dist, max_dist))
-					placement_correction[i_2] *= pow(1 - chance_closer[0], count)
+				player_chunk_displacement_arr = numpy.sqrt(numpy.pow(reigon[2]["x_coord"]-player_pos[0], 2)+numpy.pow(reigon[2]["z_coord"]-player_pos[1], 2))
+				chance_closer_arr = scipy.integrate.quad_vec(diff_ring_integrand, 0, 2*math.pi, args=(player_pos_angle, player_displacement, player_chunk_displacement_arr, min_dist, max_dist))
+				placement_correction *= numpy.pow(1 - chance_closer_arr[0], count)
 
 		reigon[2]["raw_weight"] *= chance * placement_correction
 		total_prob += numpy.sum(reigon[2]["raw_weight"])
