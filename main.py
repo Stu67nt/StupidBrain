@@ -127,7 +127,6 @@ def find_probablilty(player_pos: tuple, g_set, strd_dev, throws=1):
 		placement_correction = numpy.ones(len(reigon[2]))
 		player_chunk_displacement_arr = numpy.zeros(len(reigon[2]))
 		for j, comparison_set in enumerate(g_set):
-			print("hai")
 			min_dist, max_dist, count = RING_REGIONS[j][0], RING_REGIONS[j][1], RING_REGIONS[j][2]
 			if i != j:
 				player_chunk_displacement_arr = numpy.sqrt(numpy.pow(reigon[2]["x_coord"]-player_pos[0], 2)+numpy.pow(reigon[2]["z_coord"]-player_pos[1], 2))
