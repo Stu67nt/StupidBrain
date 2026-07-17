@@ -39,10 +39,10 @@ When we read the player's measurement of the eye of ender angle we assume it is 
 ![measurementerror.png](RMassets/measurementerror.png)
 
 Now we can go back to finding the closest stronghold. This is mostly where all the scary parts come into play. I won't go into exact detail with this as I am yet to fully understand it myself but the general idea here is we are each comparing each candidate chunk (i in this case) to each other one (l) and trying to find what are the chances there is a closer stronghold. R1 and R0 are the bounds where if a l spawns inside it is closer to you than i.   
-![img.png](candidatecloser.png)  
+![candidatecloser.png](RMassets/candidatecloser.png)  
 
 This is some math saying what is the chance of the zone we calculated earlier intersecting with a ring reigon which is not the same one as the out current one.  
-![img_1.png](img_1.png)
+![diffring.png](RMassets/diffring.png)
 
 "But sTuUnNNtTt what if they are in the same ring????" 
 
