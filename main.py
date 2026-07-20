@@ -32,6 +32,11 @@ RING_REGIONS = [
 				]
 
 def surrounding_rings(player_displacement):
+	"""
+	Idenifies the rings which should be focused on when calculating stronghold position
+	:param player_displacement:
+	:return:
+	"""
 	for_back_rings = []
 	max_ring = len(RING_REGIONS)-1
 	for i, ring in enumerate(RING_REGIONS):
@@ -94,9 +99,9 @@ def precompute_g_set():
 		raw_weight_total = 0
 		ring_set = [0, 0, []]
 		min_dist, max_dist = region[0], region[1]
-		# Beta distribution integral
+		# Beta distribution integral (currently not used) (use where you implement i=j logic)
 		ring_set[0] = scipy.integrate.quad(integrand, (-15 * math.sqrt(2)) / min_dist, (15 * math.sqrt(2)) / min_dist, args=(min_dist))
-		# WTF ARE YOU
+		# Modeling random angle distribution
 		ring_set[1] = 1/(2*math.pi*(max_dist-min_dist))
 
 		for x in range(-max_dist, max_dist + 1, 16):
@@ -106,7 +111,7 @@ def precompute_g_set():
 				displacement = math.sqrt(pow(x_coord, 2) + pow(z_coord, 2))
 				if min_dist <= displacement <= max_dist:
 					angle = math.atan2(-x_coord, z_coord)
-					raw_weight = ring_set[0][0] * (256 / displacement)
+					raw_weight = ring_set[1] * (256 / displacement)
 					ring_set[2].append((x_coord, z_coord, displacement, angle, raw_weight))
 		ring_set[2] = numpy.array(ring_set[2], dtype=[("x_coord", "f8"), ("z_coord", numpy.float64), ("displacement", numpy.float64), ("angle", numpy.float64), ("raw_weight", numpy.float64)])
 		raw_weight_total = numpy.sum(ring_set[2]["raw_weight"])
@@ -147,7 +152,7 @@ def find_probablilty(player_pos: tuple, g_set, strd_dev, throws=1):
 				min_dist, max_dist, count = RING_REGIONS[j][0], RING_REGIONS[j][1], RING_REGIONS[j][2]
 				if i != j and RING_REGIONS[j] in valid_reigons:
 					player_chunk_displacement_arr = numpy.sqrt(numpy.pow(reigon[2]["x_coord"]-player_pos[0], 2)+numpy.pow(reigon[2]["z_coord"]-player_pos[1], 2))
-					chance_closer_arr = diff_ring_integrand_simpson(player_pos_angle, player_displacement, player_chunk_displacement_arr, min_dist, max_dist)# scipy.integrate.quad_vec(diff_ring_integrand, 0, 2*math.pi, args=(player_pos_angle, player_displacement, player_chunk_displacement_arr, min_dist, max_dist), limit=10)
+					chance_closer_arr = diff_ring_integrand_simpson(player_pos_angle, player_displacement, player_chunk_displacement_arr, min_dist, max_dist)
 					placement_correction *= numpy.pow(1 - chance_closer_arr, count)
 			reigon[2]["raw_weight"] *= chance * placement_correction
 			total_prob += numpy.sum(reigon[2]["raw_weight"])
@@ -282,4 +287,3 @@ def main_probabilistic():
 
 
 main_probabilistic()
-# print(surrounding_rings(20248.4567))
