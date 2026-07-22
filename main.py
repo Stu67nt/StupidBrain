@@ -116,7 +116,6 @@ def diff_ring_integrand_simpson(player_angle: float | int, player_displacement: 
 
 def precompute_g_set():
 	G_set = []
-	i = 0
 	for region in RING_REGIONS:
 		raw_weight_total = 0
 		ring_set = [0, 0, []]
@@ -126,24 +125,32 @@ def precompute_g_set():
 		# Modeling random angle distribution
 		ring_set[1] = 1/(2*math.pi*(max_dist-min_dist))
 
-		for x in range(-max_dist, max_dist + 1, 16):
-			x_coord = x - (x % 16) + 8
-			for z in range(-max_dist, max_dist + 1, 16):
-				z_coord = z - (z % 16) + 8
-				displacement = math.sqrt(pow(x_coord, 2) + pow(z_coord, 2))
-				if min_dist <= displacement <= max_dist:
-					angle = math.atan2(-x_coord, z_coord)
-					raw_weight = ring_set[1] * (256 / displacement)
-					ring_set[2].append((x_coord, z_coord, displacement, angle, raw_weight))
-		ring_set[2] = numpy.array(ring_set[2], dtype=[("x_coord", "f8"), ("z_coord", numpy.float64), ("displacement", numpy.float64), ("angle", numpy.float64), ("raw_weight", numpy.float64)])
+		x_coord_set = numpy.array([(x-(x % 16)+8) for x in range(-max_dist, max_dist + 1, 16)])
+		z_coord_set = x_coord_set.copy()
+
+		x_coord_set, z_coord_set = numpy.meshgrid(x_coord_set, z_coord_set)
+		x_coord_set, z_coord_set = x_coord_set.ravel(), z_coord_set.ravel()
+
+		displacement_set = numpy.sqrt(numpy.pow(x_coord_set, 2) + numpy.pow(z_coord_set, 2))
+		mask = (min_dist <= displacement_set) & (displacement_set<= max_dist)
+		x_coord_set, z_coord_set, displacement_set= x_coord_set[mask], z_coord_set[mask], displacement_set[mask]
+
+		angle_set = numpy.atan2(-x_coord_set, z_coord_set)
+		raw_weight_set = ring_set[1] * (256 / displacement_set)
+		ring_array = numpy.empty(len(displacement_set), dtype=[("x_coord", numpy.float64), ("z_coord", numpy.float64), ("displacement", numpy.float64), ("angle", numpy.float64), ("raw_weight", numpy.float64)])
+		ring_array["x_coord"] = x_coord_set
+		ring_array["z_coord"] = z_coord_set
+		ring_array["displacement"] = displacement_set
+		ring_array["angle"] = angle_set
+		ring_array["raw_weight"] = raw_weight_set
+		ring_set[2] = ring_array
+
 		raw_weight_total = numpy.sum(ring_set[2]["raw_weight"])
 		if raw_weight_total > 0:
 			ring_set[2]["raw_weight"] = region[2]*(ring_set[2]["raw_weight"]/raw_weight_total)
 		else:
 			ring_set[2]["raw_weight"] = 0
-		i += 1
 		G_set.append(ring_set)
-		print(f"{i}/{len(RING_REGIONS)}")
 	return G_set
 
 
