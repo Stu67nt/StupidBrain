@@ -17,7 +17,7 @@ import numpy
 # /execute in minecraft:overworld run tp @s 15171.84 66.00 15041.59 170.39 170.39
 """
 TODO:
-
+Optimise precompute
 """
 
 RING_REGIONS = [
@@ -31,13 +31,12 @@ RING_REGIONS = [
 	[22784, 24320, 9]  # Ring 8
 				]
 
-def surrounding_rings(player_displacement):
+def surrounding_rings(player_displacement: float | int) -> list[int]:
 	"""
 	Idenifies the rings which should be focused on when calculating stronghold position
-	:param player_displacement:
-	:return:
+	:param player_displacement: Player's current displacement from (0, 0)
+	:return: List of rings around the player.
 	"""
-	for_back_rings = []
 	max_ring = len(RING_REGIONS)-1
 	for i, ring in enumerate(RING_REGIONS):
 		if (i == 0 and player_displacement <= ring[0]) or (i == max_ring and player_displacement >= ring[1]):
@@ -54,31 +53,53 @@ def surrounding_rings(player_displacement):
 
 
 
-def integrand(x_1, a):
-	val = (a * x_1) / (15 * numpy.sqrt(2))
+def integrand(x_1, min_dist: int) -> float:
+	"""
+	Calculates beta distribution of the ring for closer stroonghold comparison where target and candidate are in same chunk
+	:param x_1: changing limit for the integral
+	:param min_dist: starting displacement of the ring
+	:return: Value of curve at point x_1
+	"""
+	val = (min_dist * x_1) / (15 * numpy.sqrt(2))
+	# Prevents negative bases
 	if val <= -1 or val >= 1:
 		return 0
 	return math.pow(1 + val, 4.5) * math.pow(1 - val,4.5)
 
 
-def diff_ring_integrand_simpson(player_angle, player_displacement, player_chunk_displacement, min_dist, max_dist):
+def diff_ring_integrand_simpson(player_angle: float | int, player_displacement: float | int, player_chunk_displacement: numpy.ndarray, min_dist: int, max_dist: int) -> numpy.ndarray:
+	"""
+	Calculates the chances a different stronghold is closer.
+	:param player_angle: Angle of player's position in relation to 0, 0
+	:param player_displacement: Displacement of player from 0, 0
+	:param player_chunk_displacement: Displacement from player to every candidate chunk
+	:param min_dist: Smallest displacement of a ring reigon
+	:param max_dist: Largest displacement of a rin reigon
+	:return: Chance each rival chunk beats the closest
+	"""
+	# Batched cause we are processing a lot of data. changing will modify how many items are proessed at once
 	BATCH_SIZE = 20000
+	# Changes accuracy of the integral increase for better accuracy but worse runtime. Needs to be odd.
 	DATA_POINTS = 11
-	split_add = 2*math.pi / DATA_POINTS  # Needs odd number of data points
+
+	split_add = 2*math.pi / DATA_POINTS
 	angle_splits = numpy.array([0+split_add*i for i in range(0,DATA_POINTS)])
 	player_angle_diff = (player_angle-angle_splits)[:,None]
 	angle_gap = numpy.sin(player_angle_diff)
+	# Preventing 0 division errors
 	angle_gap = numpy.where(numpy.round(angle_gap, 8) == 0, 0, angle_gap)
+
+	# Making a clone to paste the chunks into
 	chance = numpy.empty_like(player_chunk_displacement)
 	for start_i in range(0, len(player_chunk_displacement), BATCH_SIZE):
 		end_i = min(len(player_chunk_displacement), start_i+BATCH_SIZE)
+		# A bit of reshaping so player_angle_diff and player_chunk_displacement play nicely.
 		player_chunk_displacement_bit = player_chunk_displacement[start_i: end_i][None, :]
 
 		# Solving for beta
 		arg = numpy.clip((player_displacement / player_chunk_displacement_bit) * angle_gap, -1, 1)
 		beta = numpy.asin(arg)
 
-		# FIx the (player-angle-angle_splits section)
 		# Solving for upper and lower bounds as defined in the paper
 		lb = player_chunk_displacement_bit * numpy.sin(beta - player_angle_diff) / angle_gap
 		ub = player_chunk_displacement_bit * numpy.sin(math.pi - beta - player_angle_diff) / angle_gap
@@ -87,6 +108,7 @@ def diff_ring_integrand_simpson(player_angle, player_displacement, player_chunk_
 		t_ub = numpy.clip(numpy.maximum(ub, lb), min_dist, max_dist)
 		t_lb = numpy.clip(numpy.minimum(ub, lb), min_dist, max_dist)
 
+		# Carrying out the double integral
 		vals = (t_ub-t_lb)/(max_dist-min_dist)/(2*math.pi)
 		chance[start_i:end_i] = scipy.integrate.simpson(y=vals, x=angle_splits, axis=0)
 	return chance
@@ -125,13 +147,13 @@ def precompute_g_set():
 	return G_set
 
 
-def find_probablilty(player_pos: tuple, g_set, strd_dev, throws=1):
+def find_probablilty(player_pos: tuple, g_set: list, strd_dev: float) -> list:
 	"""
+	Finds the probablility of each chunk having the closest stronghold.
 	:param player_pos: Expects a tuple of following (x, y, degree yaw angle)
-	:param g_set:
-	:param strd_dev:
-	:param throws:
-	:return:
+	:param g_set: Set of every ring containing every chunk and info about it
+	:param strd_dev: Standard deviation value set
+	:return: g_set with the calced probablility
 	"""
 	player_displacement = math.sqrt(pow(player_pos[0], 2) + pow(player_pos[1], 2))
 	player_look_angle = math.radians(player_pos[2])
@@ -139,7 +161,6 @@ def find_probablilty(player_pos: tuple, g_set, strd_dev, throws=1):
 	strd_dev = math.radians(strd_dev)
 	total_prob = 0
 	valid_reigons = surrounding_rings(player_displacement)
-	print(valid_reigons)
 	for i, reigon in enumerate(g_set):
 		if RING_REGIONS[i] in valid_reigons:
 			optimal_angle = numpy.atan2(-(reigon[2]["x_coord"]-player_pos[0]), reigon[2]["z_coord"]-player_pos[1])
@@ -162,7 +183,12 @@ def find_probablilty(player_pos: tuple, g_set, strd_dev, throws=1):
 	return g_set
 
 
-def extract_best(g_set):
+def extract_best(g_set: list) -> tuple:
+	"""
+	Identifies the most likely candiate coordinates
+	:param g_set: List of every ring containing every chunk and info about it
+	:return: Tuple containing x, z and chance of the best candiate stronghold
+	"""
 	flattened_gset = []
 	for reigon in g_set:
 		flattened_gset.append(reigon[2])
@@ -178,7 +204,11 @@ def extract_best(g_set):
 	return x,z, best_val
 
 
-def read_clipboard():
+def read_clipboard() -> str:
+	"""
+	Reads clipbaord and validates the input
+	:return: String containing the clipboard text or 'invalid'
+	"""
 	result = pyperclip.paste()
 	if result.startswith("/execute in minecraft"):
 		return result
@@ -187,6 +217,11 @@ def read_clipboard():
 
 
 def parse_result(command):
+	"""
+	Extracts relevant info from the copied command
+	:param command: Minecraft 'F3+C command'
+	:return:
+	"""
 	postion_dat = command.split(" ")[-5:]
 	x = float(postion_dat[0])
 	y = float(postion_dat[1])
@@ -225,6 +260,9 @@ def validate_result(x, z):
 
 
 def main():
+	"""
+	Most likely gonna defunct
+	"""
 	while True:
 		print("waiting one")
 		keyboard.wait("f3+c")
