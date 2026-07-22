@@ -1,6 +1,20 @@
 # StupidBrain
 
-A Minecraft stronghold calculator which utilises a bayesian statistics method of calculating the position of the stronghold. This approach implements the methods layed out in [this document](RMassets/triangulation.pdf) made by the very smart and cool NingaBrain. This entire bot is my attempt at recreating [his bot](https://github.com/Ninjabrain1/Ninjabrain-Bot) myself out of curiosity
+A Minecraft stronghold calculator which utilises a bayesian statistics method of calculating the position of the stronghold. This approach implements the methods layed out in [this document](RMassets/triangulation.pdf) made by the very smart and cool NingaBrain. This entire bot is my attempt at recreating [his bot](https://github.com/Ninjabrain1/Ninjabrain-Bot) myself out of curiosity.
+
+---
+
+## Usage guide
+
+I have prepared a video as shown below to showcase how to use this calculator properly in order to set it up so you can begin measuring eyes. 
+
+[WILL BE ADDED LATER]
+
+You will first need to configure a standard deviation. This will be how accurate your measurements are to the actual angle the eye is pointing. This is a value you will give in degrees. A good starting off value if you are casually playing is 0.1 as it will require you to measure somewhat accurately but is fairly lenient. And should give you a decent prediction.
+
+To measure the eye, I reccomend you lower FOV to 30 and your sensitivity to 0/\*yawn* one your crosshair is on the eye for better measurement. As you can see below you want the right edge of your crosshair to align with the left side of the centre pixel of the eye. This is the optimal measurement. If you are unable to get this accurate, it is OK, but a better accuracy will lead to much more accurate measurements. ![img.png](RMassets/eyealign.png)
+
+Once aligned press the combination of "F3" + "C" with the game unpaused. This will copy position data about your minecraft player which the program will then read and update its prediction. 
 
 ---
 ## How does this work
@@ -46,6 +60,11 @@ This is some math saying what is the chance of the zone we calculated earlier in
 
 "But sTuUnNNtTt what if they are in the same ring????" 
 
-Umm, we take them out back and pretend they never existed cause that is too complicated with literally no payoff. Fun fact. These last 2 paragraphs with the complicated integrals are actually not necessary to get a good enough prediction. They only really come into play when you try them out at blind distance coords but even then not entirely neccessay if you want a good enough prediction. This part is really compuationally expensive so we take a few shortcuts here to speed things up.
+Umm, we take them out back and pretend they never existed cause that is too complicated with literally no payoff. Fun fact. We do not NEED to be insanely precise for this integral, we can approximate them and take quite a few shortcuts here and achieve good enough results.  
+One such approxiation is utilising Simpson's rule for approximating integrals. Another one is not calculating for the entire set instead only doing so for relevant reigons. These bring our times to calulate from heat death of the universe down to about 2 ish seconds. 
 
-    
+There are other aspects of this paper that I have also chosen to not consider due to them overcomplicating the math with not a siginificant enough return. One example of this is the Beta disribution.
+![img.png](RMassets/betadist.png)
+
+This is only accounted for when we are trying to find a closer stronghold in the same place as the candidate stronghold. However, this is quite unlikely due to the way strongholds spawn with the angling so we opt to pretend that this won't happen as it compicates the code and increases runtime. Both of which I cannot afford atp tbh. 
+
