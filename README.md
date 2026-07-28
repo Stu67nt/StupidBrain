@@ -21,7 +21,44 @@ Once aligned press the combination of "F3" + "C" with the game unpaused. This wi
 
 If you want a good explanation without going over the exact math behind this calculator I highly reccomend checking out [this video](https://www.youtube.com/watch?v=jZ8fh-LJB88) by Heppe as well as [this video](https://www.youtube.com/watch?v=rglAku0nrKM&t=355s) by DIMM4; both of which significantly helped me as well in understand what the idea and logic behind the bot was.
 
-If you want the actual math broken down from the document, I will attempt to explain it below. This explanation **assumes** you have watched the other videos I have listed above as those give a really good explanation on a level well enough for most people. It also assumes you know enough about minecraft to understand some terms. This is intended to be a walkthrough of the math done rather than an explanation on how the method works on a high level.  
+### An Overview of the Logic
+
+If you are too lazy to watch those videos and just want me to explain it read this section.  
+
+#### The Stupid Method
+In Minecraft you have an Eye of Ender. What this item does is point to the closest stronghold in the world from your current position. If you are playing casually you would look at the direction the eye is going and then walk in that direction until you felt you went far enough then throw another eye. This method is horrible and ineffienct. It gives you no sense of distance you need to travel and you can easily overshoot the stronghold (The circles are the eyes of ender).  
+![badmethod.png](RMassets/badmethod.png)
+So let's improve this.  
+
+#### The Mediocre Method
+Now what if instead we upgraded to throwing 2 eyes. What we could do is measure the angle the eye is pointing at 2 different positions and note down the angle the eye was pointing in as well as the X and Z coordinates of each place we measured. This would allow us to form 2 lines and intersect them. We can then apply basic triginometry to be able to tell where the lines are intersecting.
+
+![betterbutstillbadmethod.png](RMassets/betterbutstillbadmethod.png)
+
+This should be where the stronghold is right? Theoretically, yes. But in reality this is not the case. Often, when you try this you are still 100's of blocks away from the stronghold which is miniutes of time loss in a speedrun. Now why is that? 
+
+1. Humans are not accurate. We are not able to consistently measure accurately enough to get a goof. 
+2. Minecraft only gives us the angle you are facing to 2 decimal places. This can cause lots of inaccuracy over the distance of 1000's of blocks leading to incorrect answers. 
+
+So let's improve this.
+
+#### The Pro Method
+So after all that waffle here is what this method does different. It has 2 different parts which combine together to create the full bot. 
+
+The first part is where we create a set of every possible coordinate where the stronghold could be pointing to. You may think that this is near infinte however we can do quite a few things to eliminate this. Down to something more reasonable. Firstly strongholds can only spawn in the set reigons shown in the image below.
+![img.png](RMassets/reigons.png)
+
+Secondly, each stronghold must start generating at the 8, 8 coordinate in a chunk (a chunk is 16x16 blocks large). With this we can create a large but managable list of every possible coordinate a stronghold can point to. A bit like this.
+![img.png](RMassets/setofcoords.png)
+
+Now we have this large set we can measure angle the eye is pointing as well as where the player is standing. With this info we can calculate what are the chances these coordinates were the actual ones the eye of ender was pointing to. This diagram below shows a cone/triangleish shape which is a range of possible angles your eye of ender could be pointing to. 
+![img.png](RMassets/coneangle.png)
+
+Now why are we forming this shape? Well that is because of the main issue which the previous method did not address. Inaccuracy with measurements. We can resolve this by normally distributing the measured angle with a standard deviation being the angle in degrees that the player's measurements vary by. What this essentially means is that we are 
+
+Then we can combine all this together to create a list of probable candidates where the stronghold could be. 
+
+### The Math behind it
 
 The paper starts off by algebraically defining the locations of a stronghold within a ring (let's call this ring k).  
 ![strongholdinitplacement.png](RMassets/strongholdinitplacementfull.png)
@@ -39,10 +76,6 @@ Afterwards, the stronghold does 2 different snaps. One to the 8,8 coordinate of 
 ![snapoffset.png](RMassets/snapoffset.png)
 
 Now we know how the strongholds are placed, I want to jump a bit ahead to how the measurement error is accounted for becuase it makes a lot more sense chronologically. The measurement error essentially deciding how accurate is your measurement and how much should it be trusted.
-This step is necessary becuase of 2 reasons. 
-
-1. Humans are not accurate. I personally don't know about you, but I severely doubt you are able to consistently be accurate with your mouse to a subpixel level. 
-2. Minecraft itself is not that accurate (at least in the info it gives.) This is due to it only giving us an accuracy up to 2 decimal places which is frankly nowhere near enough to be able to accurately decide the stronghold location without this. 
 
 That's why we add in some extra math to account for the errors we get with both Minecraft and human imprecision.
 
