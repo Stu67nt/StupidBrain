@@ -4,6 +4,7 @@ import keyboard
 import time
 import scipy
 import numpy
+import copy
 
 # /execute in minecraft:overworld run tp @s 235.84 69.00 -195.63 -134.79 -31.61
 
@@ -87,7 +88,7 @@ def diff_ring_integrand_simpson(player_angle: float | int, player_displacement: 
 	player_angle_diff = (player_angle-angle_splits)[:,None]
 	angle_gap = numpy.sin(player_angle_diff)
 	# Preventing 0 division errors
-	angle_gap = numpy.where(numpy.round(angle_gap, 8) == 0, 0, angle_gap)
+	angle_gap = numpy.where(numpy.round(angle_gap, 8) == 0, numpy.nan, angle_gap)
 
 	# Making a clone to paste the chunks into
 	chance = numpy.empty_like(player_chunk_displacement)
@@ -103,6 +104,8 @@ def diff_ring_integrand_simpson(player_angle: float | int, player_displacement: 
 		# Solving for upper and lower bounds as defined in the paper
 		lb = player_chunk_displacement_bit * numpy.sin(beta - player_angle_diff) / angle_gap
 		ub = player_chunk_displacement_bit * numpy.sin(math.pi - beta - player_angle_diff) / angle_gap
+
+		angle_gap = numpy.nan_to_num(angle_gap)
 
 		# Correcting upper and lower bounds to prevent negative values
 		t_ub = numpy.clip(numpy.maximum(ub, lb), min_dist, max_dist)
@@ -165,6 +168,7 @@ def find_probablilty(player_pos: tuple, g_set: list, strd_dev: float) -> list:
 	:param strd_dev: Standard deviation value set
 	:return: g_set with the calced probablility
 	"""
+	g_set_clone = copy.deepcopy(g_set)
 	player_displacement = math.sqrt(pow(player_pos[0], 2) + pow(player_pos[1], 2))
 	player_look_angle = math.radians(player_pos[2])
 	player_pos_angle = math.atan2(-player_pos[0], player_pos[1])
@@ -190,10 +194,14 @@ def find_probablilty(player_pos: tuple, g_set: list, strd_dev: float) -> list:
 			reigon[2]["raw_weight"] *= chance * placement_correction
 			total_prob += numpy.sum(reigon[2]["raw_weight"])
 
-	# Normalising weight
-	for reigon in g_set:
-		reigon[2]["raw_weight"] /= total_prob
-	return g_set
+	if total_prob > 0.00001:
+		# Normalising weight
+		for reigon in g_set:
+			reigon[2]["raw_weight"] /= total_prob
+		return g_set
+	else:
+		print("Likely an invalid measurement. Not considered.")
+		return g_set_clone
 
 
 def extract_best(g_set: list) -> tuple:
