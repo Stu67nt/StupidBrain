@@ -125,13 +125,16 @@ def precompute_g_set():
 		# Modeling random angle distribution
 		ring_set[1] = 1/(2*math.pi*(max_dist-min_dist))
 
+		# Chunk snapping
 		x_coord_set = numpy.array([(x-(x % 16)+8) for x in range(-max_dist, max_dist + 1, 16)])
 		z_coord_set = x_coord_set.copy()
 
+		# Making the actual set
 		x_coord_set, z_coord_set = numpy.meshgrid(x_coord_set, z_coord_set)
 		x_coord_set, z_coord_set = x_coord_set.ravel(), z_coord_set.ravel()
 
 		displacement_set = numpy.sqrt(numpy.pow(x_coord_set, 2) + numpy.pow(z_coord_set, 2))
+		# Filtering coordinates not in displacement range
 		mask = (min_dist <= displacement_set) & (displacement_set<= max_dist)
 		x_coord_set, z_coord_set, displacement_set= x_coord_set[mask], z_coord_set[mask], displacement_set[mask]
 
@@ -168,6 +171,7 @@ def find_probablilty(player_pos: tuple, g_set: list, strd_dev: float) -> list:
 	strd_dev = math.radians(strd_dev)
 	total_prob = 0
 	valid_reigons = surrounding_rings(player_displacement)
+	# Candidate chunks
 	for i, reigon in enumerate(g_set):
 		if RING_REGIONS[i] in valid_reigons:
 			optimal_angle = numpy.atan2(-(reigon[2]["x_coord"]-player_pos[0]), reigon[2]["z_coord"]-player_pos[1])
@@ -176,6 +180,7 @@ def find_probablilty(player_pos: tuple, g_set: list, strd_dev: float) -> list:
 			placement_correction = numpy.ones(len(reigon[2]))
 			player_chunk_displacement_arr = numpy.zeros(len(reigon[2]))
 
+			# Comparison chunks
 			for j, comparison_set in enumerate(g_set):
 				min_dist, max_dist, count = RING_REGIONS[j][0], RING_REGIONS[j][1], RING_REGIONS[j][2]
 				if i != j and RING_REGIONS[j] in valid_reigons:
@@ -185,6 +190,7 @@ def find_probablilty(player_pos: tuple, g_set: list, strd_dev: float) -> list:
 			reigon[2]["raw_weight"] *= chance * placement_correction
 			total_prob += numpy.sum(reigon[2]["raw_weight"])
 
+	# Normalising weight
 	for reigon in g_set:
 		reigon[2]["raw_weight"] /= total_prob
 	return g_set
@@ -330,5 +336,5 @@ def main_probabilistic():
 			else:
 				print(f"Likely an incorrect mesaurement")
 
-
-main_probabilistic()
+if __name__ == "__main__":
+	main_probabilistic()
