@@ -18,9 +18,9 @@ import copy
 # /execute in minecraft:overworld run tp @s 15171.84 66.00 15041.59 170.39 170.39
 """
 TODO:
-Optimise precompute
-"""
 
+"""
+STRD_DEV = 0.0538
 RING_REGIONS = [
 	[1280, 2816, 3],  # Ring 1
 	[4352, 5888, 6],  # Ring 2
@@ -41,16 +41,16 @@ def surrounding_rings(player_displacement: float | int) -> list[int]:
 	max_ring = len(RING_REGIONS)-1
 	for i, ring in enumerate(RING_REGIONS):
 		if (i == 0 and player_displacement <= ring[0]) or (i == max_ring and player_displacement >= ring[1]):
-			return [RING_REGIONS[i]]
+			return [i]
 		elif ring[0] <= player_displacement <= ring[1]:
 			if i == 0:
-				return [RING_REGIONS[i], RING_REGIONS[i+1]]
+				return [i, i+1]
 			elif i == max_ring:
-				return [RING_REGIONS[i-1], RING_REGIONS[i]]
+				return [i-1, i]
 			else:
-				return [RING_REGIONS[i - 1], RING_REGIONS[i], RING_REGIONS[i + 1]]
+				return [i - 1, i, i + 1]
 		if RING_REGIONS[i][1] <= player_displacement <= RING_REGIONS[i+1][0]:
-			return [RING_REGIONS[i], RING_REGIONS[i+1]]
+			return [i, i+1]
 
 
 
@@ -105,14 +105,12 @@ def diff_ring_integrand_simpson(player_angle: float | int, player_displacement: 
 		lb = player_chunk_displacement_bit * numpy.sin(beta - player_angle_diff) / angle_gap
 		ub = player_chunk_displacement_bit * numpy.sin(math.pi - beta - player_angle_diff) / angle_gap
 
-		angle_gap = numpy.nan_to_num(angle_gap)
-
 		# Correcting upper and lower bounds to prevent negative values
 		t_ub = numpy.clip(numpy.maximum(ub, lb), min_dist, max_dist)
 		t_lb = numpy.clip(numpy.minimum(ub, lb), min_dist, max_dist)
 
 		# Carrying out the double integral
-		vals = (t_ub-t_lb)/(max_dist-min_dist)/(2*math.pi)
+		vals = numpy.nan_to_num((t_ub-t_lb)/(max_dist-min_dist)/(2*math.pi))
 		chance[start_i:end_i] = scipy.integrate.simpson(y=vals, x=angle_splits, axis=0)
 	return chance
 
@@ -143,7 +141,7 @@ def precompute_g_set():
 
 		angle_set = numpy.atan2(-x_coord_set, z_coord_set)
 		raw_weight_set = ring_set[1] * (256 / displacement_set)
-		ring_array = numpy.empty(len(displacement_set), dtype=[("x_coord", numpy.float64), ("z_coord", numpy.float64), ("displacement", numpy.float64), ("angle", numpy.float64), ("raw_weight", numpy.float64)])
+		ring_array = numpy.empty(len(displacement_set), dtype=[("x_coord", numpy.int32), ("z_coord", numpy.int32), ("displacement", numpy.float32), ("angle", numpy.float32), ("raw_weight", numpy.float32)])
 		ring_array["x_coord"] = x_coord_set
 		ring_array["z_coord"] = z_coord_set
 		ring_array["displacement"] = displacement_set
@@ -176,28 +174,29 @@ def find_probablilty(player_pos: tuple, g_set: list, strd_dev: float) -> list:
 	total_prob = 0
 	valid_reigons = surrounding_rings(player_displacement)
 	# Candidate chunks
-	for i, reigon in enumerate(g_set):
-		if RING_REGIONS[i] in valid_reigons:
-			optimal_angle = numpy.atan2(-(reigon[2]["x_coord"]-player_pos[0]), reigon[2]["z_coord"]-player_pos[1])
-			angle_diff = ((-1*optimal_angle)+player_look_angle+math.pi)%(2*math.pi)-math.pi
-			chance = (1/(strd_dev*math.sqrt(2 * math.pi)))*numpy.exp(-(numpy.pow(angle_diff, 2))/(2*pow(strd_dev, 2)))
-			placement_correction = numpy.ones(len(reigon[2]))
-			player_chunk_displacement_arr = numpy.zeros(len(reigon[2]))
-
-			# Comparison chunks
-			for j, comparison_set in enumerate(g_set):
-				min_dist, max_dist, count = RING_REGIONS[j][0], RING_REGIONS[j][1], RING_REGIONS[j][2]
-				if i != j and RING_REGIONS[j] in valid_reigons:
-					player_chunk_displacement_arr = numpy.sqrt(numpy.pow(reigon[2]["x_coord"]-player_pos[0], 2)+numpy.pow(reigon[2]["z_coord"]-player_pos[1], 2))
-					chance_closer_arr = diff_ring_integrand_simpson(player_pos_angle, player_displacement, player_chunk_displacement_arr, min_dist, max_dist)
-					placement_correction *= numpy.pow(1 - chance_closer_arr, count)
-			reigon[2]["raw_weight"] *= chance * placement_correction
-			total_prob += numpy.sum(reigon[2]["raw_weight"])
-
+	for i in valid_reigons:
+		reigon = g_set[i]
+		optimal_angle = numpy.atan2(-(reigon[2]["x_coord"]-player_pos[0]), reigon[2]["z_coord"]-player_pos[1])
+		angle_diff = ((-1*optimal_angle)+player_look_angle+math.pi)%(2*math.pi)-math.pi
+		chance = (1/(strd_dev*math.sqrt(2 * math.pi)))*numpy.exp(-(numpy.pow(angle_diff, 2))/(2*pow(strd_dev, 2)))
+		placement_correction = numpy.ones(len(reigon[2]))
+		player_chunk_displacement_arr = numpy.sqrt(numpy.pow(reigon[2]["x_coord"] - player_pos[0], 2) + numpy.pow(reigon[2]["z_coord"] - player_pos[1], 2))
+		# Comparison chunks
+		for j in valid_reigons:
+			min_dist, max_dist, count = RING_REGIONS[j][0], RING_REGIONS[j][1], RING_REGIONS[j][2]
+			if i != j:
+				chance_closer_arr = diff_ring_integrand_simpson(player_pos_angle, player_displacement, player_chunk_displacement_arr, min_dist, max_dist)
+				placement_correction *= numpy.pow(1 - chance_closer_arr, count)
+			if i == j:
+				# This part is too annoying so i cba
+				pass
+		reigon[2]["raw_weight"] *= chance * placement_correction
+		total_prob += numpy.sum(reigon[2]["raw_weight"])
 	if total_prob > 0.00001:
 		# Normalising weight
-		for reigon in g_set:
-			reigon[2]["raw_weight"] /= total_prob
+		for i, reigon in enumerate(g_set):
+			if i in valid_reigons:
+				reigon[2]["raw_weight"] /= total_prob
 		return g_set
 	else:
 		print("Likely an invalid measurement. Not considered.")
@@ -320,6 +319,7 @@ def main():
 def main_probabilistic():
 	g_set = precompute_g_set()
 	count = 0
+	all_commands_data = []
 	while True:
 		print("waiting one")
 		keyboard.wait("f3+c")
@@ -328,21 +328,21 @@ def main_probabilistic():
 
 		if command1 != "invalid":
 			x1, y1, z1, yaw1, pitch1 = parse_result(command1)
-
-			print(x1, y1, z1, yaw1, pitch1)
-			t1 = time.time()
-			g_set = find_probablilty((x1, z1, yaw1), g_set, 0.0538)
-			count += 1
-			c_x, c_z, chance= extract_best(g_set)
-			print(f"Processing time: {time.time() - t1}")
-			print(f"Overworld coords: {int(c_x), int(c_z)}")
-			print(f"Nether coords: {nether_coords(c_x, c_z)}")
-			print(chance)
-			ring = validate_result(c_x, c_z)
-			if ring != -1:
-				print(f"Calculated to be in ring {ring}")
-			else:
-				print(f"Likely an incorrect mesaurement")
+			if [x1, y1, z1, yaw1, pitch1] not in all_commands_data:
+				all_commands_data.append([x1, y1, z1, yaw1, pitch1])
+				print(x1, y1, z1, yaw1, pitch1)
+				t1 = time.time()
+				g_set = find_probablilty((x1, z1, yaw1), g_set, STRD_DEV)
+				c_x, c_z, chance= extract_best(g_set)
+				print(f"Processing time: {time.time() - t1}")
+				print(f"Overworld coords: {int(c_x), int(c_z)}")
+				print(f"Nether coords: {nether_coords(c_x, c_z)}")
+				print(chance)
+				ring = validate_result(c_x, c_z)
+				if ring != -1:
+					print(f"Calculated to be in ring {ring}")
+				else:
+					print(f"Likely an incorrect mesaurement")
 
 if __name__ == "__main__":
 	main_probabilistic()
