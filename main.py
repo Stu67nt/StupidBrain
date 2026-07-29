@@ -136,8 +136,8 @@ def precompute_g_set():
 
 		displacement_set = numpy.sqrt(numpy.pow(x_coord_set, 2) + numpy.pow(z_coord_set, 2))
 		# Filtering coordinates not in displacement range
-		mask = (min_dist <= displacement_set) & (displacement_set<= max_dist)
-		x_coord_set, z_coord_set, displacement_set= x_coord_set[mask], z_coord_set[mask], displacement_set[mask]
+		displacement_mask = (min_dist <= displacement_set) & (displacement_set<= max_dist)
+		x_coord_set, z_coord_set, displacement_set= x_coord_set[displacement_mask], z_coord_set[displacement_mask], displacement_set[displacement_mask]
 
 		angle_set = numpy.atan2(-x_coord_set, z_coord_set)
 		raw_weight_set = ring_set[1] * (256 / displacement_set)
@@ -178,7 +178,19 @@ def find_probablilty(player_pos: tuple, g_set: list, strd_dev: float) -> list:
 		reigon = g_set[i]
 		optimal_angle = numpy.atan2(-(reigon[2]["x_coord"]-player_pos[0]), reigon[2]["z_coord"]-player_pos[1])
 		angle_diff = ((-1*optimal_angle)+player_look_angle+math.pi)%(2*math.pi)-math.pi
+
+		# Murdering all angles which are way too small to ever recover.
+		angle_mask = numpy.abs(angle_diff) < 15 * strd_dev
+		reigon[2] = reigon[2][angle_mask]
+		angle_diff = angle_diff[angle_mask]
+
 		chance = (1/(strd_dev*math.sqrt(2 * math.pi)))*numpy.exp(-(numpy.pow(angle_diff, 2))/(2*pow(strd_dev, 2)))
+		reigon[2]["raw_weight"] *= chance
+
+		# More filtering :yay:
+		weight_mask = reigon[2]["raw_weight"] > 0.0000001
+		reigon[2] = reigon[2][weight_mask]
+
 		placement_correction = numpy.ones(len(reigon[2]))
 		player_chunk_displacement_arr = numpy.sqrt(numpy.pow(reigon[2]["x_coord"] - player_pos[0], 2) + numpy.pow(reigon[2]["z_coord"] - player_pos[1], 2))
 		# Comparison chunks
@@ -190,7 +202,7 @@ def find_probablilty(player_pos: tuple, g_set: list, strd_dev: float) -> list:
 			if i == j:
 				# This part is too annoying so i cba
 				pass
-		reigon[2]["raw_weight"] *= chance * placement_correction
+		reigon[2]["raw_weight"] *= placement_correction
 		total_prob += numpy.sum(reigon[2]["raw_weight"])
 	if total_prob > 0.00001:
 		# Normalising weight
