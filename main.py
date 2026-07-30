@@ -188,7 +188,7 @@ def find_probablilty(player_pos: tuple, g_set: list, strd_dev: float) -> list:
 		reigon[2]["raw_weight"] *= chance
 
 		# More filtering :yay:
-		weight_mask = reigon[2]["raw_weight"] > 0.0000001
+		weight_mask = reigon[2]["raw_weight"] > 0.0001
 		reigon[2] = reigon[2][weight_mask]
 
 		placement_correction = numpy.ones(len(reigon[2]))
@@ -204,7 +204,9 @@ def find_probablilty(player_pos: tuple, g_set: list, strd_dev: float) -> list:
 				pass
 		reigon[2]["raw_weight"] *= placement_correction
 		total_prob += numpy.sum(reigon[2]["raw_weight"])
-	if total_prob > 0.00001:
+
+	# checking if we are looking in right direction
+	if total_prob > 0.00000001:
 		# Normalising weight
 		for i, reigon in enumerate(g_set):
 			if i in valid_reigons:
