@@ -12,7 +12,7 @@ import copy
 # /execute in minecraft:overworld run tp @s 1920.48 75.00 -1259.10 139.88 -31.30
 # /execute in minecraft:overworld run tp @s 1960.78 68.00 -1301.01 132.21 -31.74
 
-#test poscc
+#test pos
 # /execute in minecraft:overworld run tp @s 15144.95 66.00 15039.22 -548.52 -31.60
 # /execute in minecraft:overworld run tp @s 15134.30 66.00 15041.20 171.86 171.86
 # /execute in minecraft:overworld run tp @s 15171.84 66.00 15041.59 170.39 170.39
