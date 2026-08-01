@@ -1,3 +1,4 @@
+import sys
 from PySide6.QtGui import QIcon
 from calc_math import *
 from gui import *
@@ -28,8 +29,8 @@ class Calc(QtCore.QRunnable):
 				if [x1, y1, z1, yaw1, pitch1] not in self.all_commands_data:
 					self.all_commands_data.append([x1, y1, z1, yaw1, pitch1])
 					t1 = time.time()
-					g_set = find_probablilty((x1, z1, yaw1), self.g_set, STRD_DEV)
-					results = extract_best(g_set)
+					self.g_set = find_probablilty((x1, z1, yaw1), self.g_set, STRD_DEV)
+					results = extract_best(self.g_set)
 					print(results)
 					self.signals.results.emit(results, self.all_commands_data[-1])
 
@@ -37,8 +38,8 @@ if __name__ == "__main__":
 	g_set = precompute_g_set()
 	app = QtWidgets.QApplication()
 	widget = MainWindow(g_set)
-	widget.setFixedSize(550, 240)
-	widget.setWindowOpacity(0.9)
+	widget.setFixedSize(350, 270)
+	widget.setWindowOpacity(0.95)
 	widget.setWindowTitle("StupidBrain Calc")
 	widget.setWindowIcon(QIcon("icon.png"))
 	widget.show()
