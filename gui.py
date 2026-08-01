@@ -57,6 +57,7 @@ class MainWindow(QtWidgets.QWidget):
 	def reset(self):
 		self.table.clearContents()
 		self.thread.g_set = deepcopy(self.g_set_orig)
+		self.thread.all_commands_data = []
 
 	def write(self, text):
 		self.log_view.appendPlainText(text.strip())
