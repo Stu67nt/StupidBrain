@@ -16,7 +16,7 @@ class Calc(QtCore.QRunnable):
 
 	@Slot()
 	def run(self):
-		count = 0
+		ring = 0
 		self.all_commands_data = []
 		while True:
 			print("waiting one")
@@ -25,9 +25,8 @@ class Calc(QtCore.QRunnable):
 			command1 = read_clipboard()
 
 			if command1 != "invalid":
-				x, y, z, yaw, pitch = parse_result(command1)
+				x, y, z, yaw, pitch = command1
 				if [x, y, z, yaw, pitch] not in self.all_commands_data:
-
 					if len(self.all_commands_data) > 0:
 						pos = self.all_commands_data[0]
 						gradient1 = get_gradient(pos[3])
@@ -38,14 +37,7 @@ class Calc(QtCore.QRunnable):
 
 						c_x, c_z = intersect_lines(gradient1, gradient2, constant1, constant2)
 						ring = validate_result(c_x, c_z)
-						if ring != -1:
-							self.all_commands_data.append([x, y, z, yaw, pitch])
-							t1 = time.time()
-							self.g_set = find_probablilty((x, z, yaw), self.g_set, STRD_DEV)
-							results = extract_best(self.g_set)
-							print(results)
-							self.signals.results.emit(results, self.all_commands_data[-1])
-					else:
+					if ring != -1:
 						self.all_commands_data.append([x, y, z, yaw, pitch])
 						t1 = time.time()
 						self.g_set = find_probablilty((x, z, yaw), self.g_set, STRD_DEV)
