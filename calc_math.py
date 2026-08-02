@@ -242,7 +242,13 @@ def read_clipboard() -> str:
 	"""
 	result = pyperclip.paste()
 	if result.startswith("/execute in minecraft"):
-		return result
+		postion_dat = result.split(" ")[-5:]
+		x = float(postion_dat[0])
+		y = float(postion_dat[1])
+		z = float(postion_dat[2])
+		yaw = float(postion_dat[3])
+		pitch = float(postion_dat[4])
+		return x, y, z, yaw, pitch
 	else:
 		return "invalid"
 
@@ -305,8 +311,8 @@ def main_old():
 		command2 = read_clipboard()
 
 		if command1 != "invalid" and command2 != "invalid":
-			x1, y1, z1, yaw1, pitch1 = parse_result(command1)
-			x2, y2, z2, yaw2, pitch2 = parse_result(command2)
+			x1, y1, z1, yaw1, pitch1 = command1
+			x2, y2, z2, yaw2, pitch2 = command2
 
 			print(x1, y1, z1, yaw1, pitch1)
 			print(x2, y2, z2, yaw2, pitch2)
@@ -338,7 +344,7 @@ def main_probabilistic():
 		command1 = read_clipboard()
 
 		if command1 != "invalid":
-			x1, y1, z1, yaw1, pitch1 = parse_result(command1)
+			x1, y1, z1, yaw1, pitch1 = command1
 			if [x1, y1, z1, yaw1, pitch1] not in all_commands_data:
 				all_commands_data.append([x1, y1, z1, yaw1, pitch1])
 				print(x1, y1, z1, yaw1, pitch1)
