@@ -1,3 +1,4 @@
+import math
 import sys
 from PySide6.QtGui import QIcon
 from calc_math import *
@@ -14,6 +15,13 @@ class Calc(QtCore.QRunnable):
 		self.signals = CalcSignals()
 		self.g_set = g_set
 
+	def validate_measurement(self, sr1, sr2):
+		for r in sr1:
+			if r in sr2:
+				return True
+		return False
+
+
 	@Slot()
 	def run(self):
 		ring = 0
@@ -29,14 +37,21 @@ class Calc(QtCore.QRunnable):
 				if [x, y, z, yaw, pitch] not in self.all_commands_data:
 					if len(self.all_commands_data) > 0:
 						pos = self.all_commands_data[0]
-						gradient1 = get_gradient(pos[3])
-						gradient2 = get_gradient(yaw)
 
-						constant1 = get_constant(pos[0], pos[2], gradient1)
-						constant2 = get_constant(x, z, gradient2)
+						sr1 = surrounding_rings(math.sqrt(pow(pos[0], 2) + pow(pos[2], 2)))
+						sr2 = surrounding_rings(math.sqrt(pow(x, 2) + pow(z, 2)))
 
-						c_x, c_z = intersect_lines(gradient1, gradient2, constant1, constant2)
-						ring = validate_result(c_x, c_z)
+						if self.validate_measurement(sr1, sr2):
+							gradient1 = get_gradient(pos[3])
+							gradient2 = get_gradient(yaw)
+
+							constant1 = get_constant(pos[0], pos[2], gradient1)
+							constant2 = get_constant(x, z, gradient2)
+
+							c_x, c_z = intersect_lines(gradient1, gradient2, constant1, constant2)
+							ring = validate_result(c_x, c_z)
+						else:
+							ring = -1
 					if ring != -1:
 						self.all_commands_data.append([x, y, z, yaw, pitch])
 						t1 = time.time()
