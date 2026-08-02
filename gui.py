@@ -20,6 +20,9 @@ class MainWindow(QtWidgets.QWidget):
 		self.reset_button = QPushButton("Reset")
 		self.reset_button.clicked.connect(self.reset)
 
+		self.lock_button = QPushButton("Lock")
+		self.lock_button.clicked.connect(self.lock)
+
 		self.log_view = QPlainTextEdit(self)
 		self.log_view.setReadOnly(True)
 		self.log_view.setMaximumHeight(30)
@@ -31,6 +34,7 @@ class MainWindow(QtWidgets.QWidget):
 		self.layout = QtWidgets.QVBoxLayout(self)
 		self.layout.addWidget(self.table)
 		self.layout.addWidget(self.reset_button)
+		self.layout.addWidget(self.lock_button)
 		self.layout.addWidget(self.log_view)
 
 		self.thread = Calc(self.g_set_main)
@@ -40,14 +44,17 @@ class MainWindow(QtWidgets.QWidget):
 
 
 	@QtCore.Slot(list)
-	def display_best(self, results, player_pos):
+	def display_best(self, results, player_pos, need_fixing):
 		self.table.clearContents()
 		for i, (x, z, distance, angle, chance) in enumerate(results):
-			distance = math.sqrt(pow((x - player_pos[0]),2) + pow((z - player_pos[2]), 2))
-			angle = math.degrees(math.atan2(-(x - player_pos[0]), (z - player_pos[2])))
-			items = [QTableWidgetItem(str((x, z))), QTableWidgetItem(str(round(chance * 100, 2))),
-					QTableWidgetItem(str(round(distance))), QTableWidgetItem(str(nether_coords(x, z))),
-					 QTableWidgetItem(str(round(angle, 1)))]
+			if need_fixing:
+				distance = math.sqrt(pow((x - player_pos[0]),2) + pow((z - player_pos[2]), 2))
+				angle = math.degrees(math.atan2(-(x - player_pos[0]), (z - player_pos[2])))
+				items = [QTableWidgetItem(str((x, z))), QTableWidgetItem(str(round(chance * 100, 2))),
+						QTableWidgetItem(str(round(distance))), QTableWidgetItem(str(nether_coords(x, z))),
+						 QTableWidgetItem(str(round(angle, 1)))]
+			else:
+				items = results[i]
 
 			for j in range(0, len(items)):
 				self.table.setItem(i, j, items[j])
@@ -58,6 +65,15 @@ class MainWindow(QtWidgets.QWidget):
 		self.table.clearContents()
 		self.thread.g_set = deepcopy(self.g_set_orig)
 		self.thread.all_commands_data = []
+
+	@QtCore.Slot()
+	def lock(self):
+		if self.thread.locked_angle:
+			print("unlocked")
+			self.thread.locked_angle = False
+		elif not self.thread.locked_angle:
+			print("locked")
+			self.thread.locked_angle = True
 
 	def write(self, text):
 		self.log_view.appendPlainText(text.strip())

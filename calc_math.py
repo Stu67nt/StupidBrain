@@ -207,7 +207,7 @@ def find_probablilty(player_pos: tuple, g_set: list, strd_dev: float) -> list:
 
 	# checking if we are looking in right direction
 	if total_prob > 0.00000001:
-		# Normalising weight
+		# Normalizing weight
 		for i, reigon in enumerate(g_set):
 			if i in valid_reigons:
 				reigon[2]["raw_weight"] /= total_prob
@@ -234,21 +234,23 @@ def extract_best(g_set: list) -> tuple:
 	return best_coords
 
 
-
-def read_clipboard() -> str:
+def read_clipboard(auto_filter: bool = True) -> str:
 	"""
 	Reads clipbaord and validates the input
 	:return: String containing the clipboard text or 'invalid'
 	"""
 	result = pyperclip.paste()
 	if result.startswith("/execute in minecraft"):
-		postion_dat = result.split(" ")[-5:]
-		x = float(postion_dat[0])
-		y = float(postion_dat[1])
-		z = float(postion_dat[2])
-		yaw = float(postion_dat[3])
-		pitch = float(postion_dat[4])
-		return x, y, z, yaw, pitch
+		if auto_filter:
+			postion_dat = result.split(" ")[-5:]
+			x = float(postion_dat[0])
+			y = float(postion_dat[1])
+			z = float(postion_dat[2])
+			yaw = float(postion_dat[3])
+			pitch = float(postion_dat[4])
+			return x, y, z, yaw, pitch
+		else:
+			return result
 	else:
 		return "invalid"
 
