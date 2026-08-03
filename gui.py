@@ -39,6 +39,7 @@ class MainWindow(QtWidgets.QWidget):
 
 		self.thread = Calc(self.g_set_main)
 		self.thread.signals.results.connect(self.display_best)
+		self.thread.logger.output.connect(self.write)
 		self.threadpool = QtCore.QThreadPool()
 		self.threadpool.start(self.thread)
 

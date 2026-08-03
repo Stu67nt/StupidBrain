@@ -9,10 +9,14 @@ from PySide6.QtCore import QThreadPool, Slot, QObject, Signal
 class CalcSignals(QObject):
 	results = Signal(list, list, bool)
 
+class LogSignals(QObject):
+	output = Signal(str)
+
 class Calc(QtCore.QRunnable):
 	def __init__(self, g_set):
 		super().__init__()
 		self.signals = CalcSignals()
+		self.logger = LogSignals()
 		self.g_set = g_set
 		self.locked_angle = False
 		self.results = None
@@ -77,17 +81,18 @@ class Calc(QtCore.QRunnable):
 							c_x, c_z = intersect_lines(gradient1, gradient2, constant1, constant2)
 							ring = validate_result(c_x, c_z)
 						else:
+							self.logger.output.emit("Invalid measurement")
 							ring = -1
 					if ring != -1:
 						self.all_commands_data.append([x, y, z, yaw, pitch])
 						self.g_set = find_probablilty((x, z, yaw), self.g_set, STRD_DEV)
 						self.results = extract_best(self.g_set)
-						print(self.results)
 						self.signals.results.emit(self.results, self.all_commands_data[-1], True)
 				elif self.locked_angle and self.results is not None:
-					print("lock")
 					lock_results = self.lock_angle_calcs(read_clipboard(auto_filter=False))
 					self.signals.results.emit(lock_results, self.all_commands_data[-1], False)
+			else:
+				self.logger.output.emit("Invalid paste")
 
 if __name__ == "__main__":
 	g_set = precompute_g_set()
