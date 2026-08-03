@@ -29,21 +29,23 @@ class Calc(QtCore.QRunnable):
 		parts = command.split(" ")
 		parts[2] = parts[2].split(":")
 		dimension, x, z, yaw = parts[2][1], float(parts[6]), float(parts[8]), float(parts[9])
+		display_lock = []
 
 		for i, pos in enumerate(self.results):
 			if dimension == "the_nether":
 				n_x, n_z = nether_coords(pos[0], pos[2])
 				distance = math.sqrt(pow((x - n_x), 2) + pow((z - n_z), 2))
 				curr_angle = math.degrees(math.atan2(-(x - n_x), (z - n_z)))
-				self.results[i] = [QTableWidgetItem(str((pos[0], pos[1]))), QTableWidgetItem(str(round(pos[5] * 100, 2))),
+				display_lock.append([QTableWidgetItem(str((pos[0], pos[1]))), QTableWidgetItem(str(round(pos[5] * 100, 2))),
 						 QTableWidgetItem(str(round(distance))), QTableWidgetItem(str(nether_coords(pos[0], pos[1]))),
-						 QTableWidgetItem(str(round(curr_angle, 1)))]
+						 QTableWidgetItem(str(round(curr_angle, 1)))])
 			else:
-				distance = math.sqrt(pow((x - pos[0]), 2) + pow((z - pos[1]), 2))
+				distance = math.sqrt(pow(x - pos[0], 2) + pow(z - pos[1], 2))
 				curr_angle = math.degrees(math.atan2(-(pos[0]-x), (pos[1]-z)))
-				self.results[i] = [QTableWidgetItem(str((pos[0], pos[1]))), QTableWidgetItem(str(round(pos[4] * 100, 2))),
+				display_lock.append([QTableWidgetItem(str((pos[0], pos[1]))), QTableWidgetItem(str(round(pos[4] * 100, 2))),
 						 QTableWidgetItem(str(round(distance))), QTableWidgetItem(str(nether_coords(pos[0], pos[1]))),
-						 QTableWidgetItem(str(round(curr_angle, 1)))]
+						 QTableWidgetItem(str(round(curr_angle, 1)))])
+		return display_lock
 
 
 	@Slot()
@@ -84,14 +86,14 @@ class Calc(QtCore.QRunnable):
 						self.signals.results.emit(self.results, self.all_commands_data[-1], True)
 				elif self.locked_angle and self.results is not None:
 					print("lock")
-					self.lock_angle_calcs(read_clipboard(auto_filter=False))
-					self.signals.results.emit(self.results, self.all_commands_data[-1], False)
+					lock_results = self.lock_angle_calcs(read_clipboard(auto_filter=False))
+					self.signals.results.emit(lock_results, self.all_commands_data[-1], False)
 
 if __name__ == "__main__":
 	g_set = precompute_g_set()
 	app = QtWidgets.QApplication()
 	widget = MainWindow(g_set)
-	widget.setFixedSize(350, 370)
+	widget.setFixedSize(350, 300)
 	widget.setWindowOpacity(0.95)
 	widget.setWindowTitle("StupidBrain Calc")
 	widget.setWindowIcon(QIcon("icon.png"))

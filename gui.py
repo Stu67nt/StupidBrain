@@ -63,6 +63,7 @@ class MainWindow(QtWidgets.QWidget):
 	@QtCore.Slot()
 	def reset(self):
 		self.table.clearContents()
+		self.table.resizeColumnsToContents()
 		self.thread.g_set = deepcopy(self.g_set_orig)
 		self.thread.all_commands_data = []
 
@@ -70,9 +71,11 @@ class MainWindow(QtWidgets.QWidget):
 	def lock(self):
 		if self.thread.locked_angle:
 			print("unlocked")
+			self.lock_button.setText("Lock")
 			self.thread.locked_angle = False
 		elif not self.thread.locked_angle:
 			print("locked")
+			self.lock_button.setText("Unlock")
 			self.thread.locked_angle = True
 
 	def write(self, text):
