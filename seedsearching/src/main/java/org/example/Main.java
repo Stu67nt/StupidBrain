@@ -10,7 +10,7 @@ Find a seed with a ruined portal within 100 blocks of spawn meeting following cr
 
 public class Main {
      static void main() {
-        RuinedPortalFilter finder = new RuinedPortalFilter(0L, 100000000L);
+        DesertTempleFilter finder = new DesertTempleFilter(0L, 100000000L);
         finder.run();
     }
 }

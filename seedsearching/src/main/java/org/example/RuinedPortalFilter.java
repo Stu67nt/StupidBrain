@@ -63,7 +63,7 @@ public class RuinedPortalFilter {
             return;
         }
 
-        WorldSeed.getSisterSeeds(structureSeed).asStream().boxed().limit(100).forEach(fullWorldSeed ->
+        WorldSeed.getSisterSeeds(structureSeed).asStream().boxed().limit(1000).forEach(fullWorldSeed ->
         {
             BiomeSource sobs = BiomeSource.of(Dimension.OVERWORLD, version, fullWorldSeed);
             TerrainGenerator sotg = TerrainGenerator.of(sobs);
