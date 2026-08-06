@@ -3,6 +3,9 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/StupidBrain.iml" filepath="$PROJECT_DIR$/.idea/StupidBrain.iml" />
+      <module fileurl="file://$PROJECT_DIR$/seedsearching.iml" filepath="$PROJECT_DIR$/seedsearching.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/seedsearching.main.iml" filepath="$PROJECT_DIR$/.idea/modules/seedsearching.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/seedsearching.test.iml" filepath="$PROJECT_DIR$/.idea/modules/seedsearching.test.iml" />
     </modules>
   </component>
 </project>
