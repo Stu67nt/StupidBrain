@@ -19,6 +19,7 @@ public class DesertTempleFilter {
     private long seedMin;
     private long seedMax;
 
+    private final int CHUNK_DIST = 4;
     private final MCVersion version = MCVersion.v1_16_1;
     private final ChunkRand rand = new ChunkRand();
     private final DesertPyramid dt = new DesertPyramid(version);
@@ -41,7 +42,7 @@ public class DesertTempleFilter {
         CPos dtPos = dt.getInRegion(structureSeed, 0, 0, rand);
         BiomeSource obs = BiomeSource.of(Dimension.OVERWORLD, version, structureSeed);
 
-        if (dtPos.distanceTo(CPos.ZERO, DistanceMetric.CHEBYSHEV) > 4){
+        if (dtPos.distanceTo(CPos.ZERO, DistanceMetric.CHEBYSHEV) > CHUNK_DIST){
             return;
         }
 
@@ -64,7 +65,7 @@ public class DesertTempleFilter {
                 return;
             }
 
-            if (spawnPoint.distanceTo(dtPos, DistanceMetric.CHEBYSHEV) > 4) {
+            if (spawnPoint.distanceTo(dtPos, DistanceMetric.CHEBYSHEV) > CHUNK_DIST) {
                 return;
             }
 

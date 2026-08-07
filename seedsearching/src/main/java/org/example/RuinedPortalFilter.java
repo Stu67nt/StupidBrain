@@ -19,6 +19,7 @@ public class RuinedPortalFilter {
     private long seedMin;
     private long seedMax;
 
+    private final int CHUNK_DIST = 4;
     private final MCVersion version = MCVersion.v1_16_1;
     private final ChunkRand rand = new ChunkRand();
     private final RuinedPortal portal = new RuinedPortal(Dimension.OVERWORLD, version);
@@ -41,7 +42,7 @@ public class RuinedPortalFilter {
         CPos rpPos = portal.getInRegion(structureSeed, 0, 0, rand);
         BiomeSource obs = BiomeSource.of(Dimension.OVERWORLD, version, structureSeed);
 
-        if (rpPos.distanceTo(CPos.ZERO, DistanceMetric.CHEBYSHEV) > 6){
+        if (rpPos.distanceTo(CPos.ZERO, DistanceMetric.CHEBYSHEV) > CHUNK_DIST){
             return;
         }
 
@@ -72,7 +73,7 @@ public class RuinedPortalFilter {
                 return;
             }
 
-            if (spawnPoint.distanceTo(rpPos, DistanceMetric.CHEBYSHEV) > 6) {
+            if (spawnPoint.distanceTo(rpPos, DistanceMetric.CHEBYSHEV) > CHUNK_DIST) {
                 return;
             }
 
