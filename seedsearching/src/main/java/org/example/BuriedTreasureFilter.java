@@ -51,8 +51,6 @@ public class BuriedTreasureFilter {
             return;
         }
 
-
-
         if (btPos.distanceTo(CPos.ZERO, DistanceMetric.CHEBYSHEV) > CHUNK_DIST){
             return;
         }
@@ -71,7 +69,6 @@ public class BuriedTreasureFilter {
         WorldSeed.getSisterSeeds(structureSeed).asStream().boxed().limit(100).forEach(fullWorldSeed ->
         {
             BiomeSource sobs = BiomeSource.of(Dimension.OVERWORLD, version, fullWorldSeed);
-            TerrainGenerator sotg = TerrainGenerator.of(sobs);
             CPos spawnPoint = SpawnPoint.getApproximateSpawn((OverworldBiomeSource) sobs).toChunkPos();
             if (!(bt.canSpawn(btPos, sobs))){
                 return;

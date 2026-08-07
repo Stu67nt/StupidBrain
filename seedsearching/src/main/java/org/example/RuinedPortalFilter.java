@@ -1,6 +1,7 @@
 package org.example;
 
 import com.seedfinding.mcbiome.source.BiomeSource;
+import com.seedfinding.mcbiome.source.OverworldBiomeSource;
 import com.seedfinding.mccore.rand.ChunkRand;
 import com.seedfinding.mccore.rand.seed.WorldSeed;
 import com.seedfinding.mccore.state.Dimension;
@@ -67,8 +68,7 @@ public class RuinedPortalFilter {
         WorldSeed.getSisterSeeds(structureSeed).asStream().boxed().limit(1000).forEach(fullWorldSeed ->
         {
             BiomeSource sobs = BiomeSource.of(Dimension.OVERWORLD, version, fullWorldSeed);
-            TerrainGenerator sotg = TerrainGenerator.of(sobs);
-            CPos spawnPoint = SpawnPoint.getSpawn((OverworldTerrainGenerator) sotg).toChunkPos();
+            CPos spawnPoint = SpawnPoint.getApproximateSpawn((OverworldBiomeSource) sobs).toChunkPos();
             if (!(portal.canSpawn(rpPos, sobs))){
                 return;
             }

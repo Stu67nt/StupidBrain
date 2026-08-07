@@ -60,7 +60,6 @@ public class DesertTempleFilter {
         WorldSeed.getSisterSeeds(structureSeed).asStream().boxed().limit(100).forEach(fullWorldSeed ->
         {
             BiomeSource sobs = BiomeSource.of(Dimension.OVERWORLD, version, fullWorldSeed);
-            TerrainGenerator sotg = TerrainGenerator.of(sobs);
             CPos spawnPoint = SpawnPoint.getApproximateSpawn((OverworldBiomeSource) sobs).toChunkPos();
             if (!(dt.canSpawn(dtPos, sobs))){
                 return;
