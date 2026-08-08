@@ -122,6 +122,7 @@ class Calc(QtCore.QRunnable):
 				self.logger.output.emit("Invalid paste")
 
 if __name__ == "__main__":
+	"""
 	g_set = precompute_g_set()
 	app = QtWidgets.QApplication()
 	widget = MainWindow(g_set)
@@ -133,3 +134,9 @@ if __name__ == "__main__":
 	widget.show()
 
 	sys.exit(app.exec())
+	"""
+	from py4j.java_gateway import JavaGateway
+
+	gateway = JavaGateway()
+	entry = gateway.entry_point
+	entry.DesertTempleFinder()
