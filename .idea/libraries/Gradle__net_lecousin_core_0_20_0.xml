@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="Gradle: net.lecousin:core:0.20.0" type="java-imported" external-system-id="GRADLE">
+    <properties groupId="net.lecousin" artifactId="core" version="0.20.0" baseVersion="0.20.0" />
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/net.lecousin/core/0.20.0/e2f4c2df39c634d8a8a8a43370d195df53f1eaf/core-0.20.0.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/net.lecousin/core/0.20.0/ef6d4997ad963c2567f330f40892f3bfb1f571ea/core-0.20.0-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

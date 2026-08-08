@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <bytecodeTargetLevel>
+      <module name="seedsearching" target="26" />
+      <module name="seedsearching.main" target="26" />
+      <module name="seedsearching.test" target="26" />
+    </bytecodeTargetLevel>
+  </component>
+</project>

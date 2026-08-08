@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="Gradle: com.seedfinding:mc_biome:1.171.1" type="java-imported" external-system-id="GRADLE">
+    <properties groupId="com.seedfinding" artifactId="mc_biome" version="1.171.1" baseVersion="1.171.1" />
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.seedfinding/mc_biome/1.171.1/f9f2fae80b1861b9a7669a37a6cece040dab9ccd/mc_biome-1.171.1.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.seedfinding/mc_biome/1.171.1/dbd7e56598a86a0fc6ab52e3d7d5474e542e1e25/mc_biome-1.171.1-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
