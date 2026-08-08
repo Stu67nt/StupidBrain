@@ -1,16 +1,16 @@
 package org.example;
 
-/*
-GOAL:
-Find a seed with a ruined portal within 100 blocks of spawn meeting following criteria.
-- Should contain at least 27 iron nuggets
-- Contains one of fire charge, flint and steel,
-- 6 or more obsidian
- */
+import py4j.GatewayServer;
 
 public class Main {
-     static void main() {
-        DesertTempleFilter finder = new DesertTempleFilter(0L, 100000000L);
+     public void main() {
+        VillageFilter finder = new VillageFilter(0L, 100000000L);
         finder.run();
     }
+
+//    public static void main(String[] args) {
+//        GatewayServer server = new GatewayServer(new Main());
+//        server.start();
+//        System.out.println("Gateway server started");
+//    }
 }
