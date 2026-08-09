@@ -2,15 +2,34 @@ package org.example;
 
 import py4j.GatewayServer;
 
+import java.util.LinkedList;
+
 public class Main {
-     public void main() {
-        BastionFillter finder = new BastionFillter(0L, 100000000L);
+    public LinkedList<Long> DesertTempleChecker(long seed) {
+        DesertTempleFilter finder = new DesertTempleFilter();
+        LinkedList<Long> result = finder.checkSeed(seed);
+        return result;
+    }
+    public void Village() {
+        VillageFilter finder = new VillageFilter(0L, 100000000L);
+        finder.run();
+    }
+    public void Shipwreck() {
+        ShipwreckFilter finder = new ShipwreckFilter(0L, 100000000L);
+        finder.run();
+    }
+    public void RuinedPortal() {
+        RuinedPortalFilter finder = new RuinedPortalFilter(0L, 100000000L);
+        finder.run();
+    }
+    public void BuriedTreasure() {
+        BuriedTreasureFilter finder = new BuriedTreasureFilter(0L, 100000000L);
         finder.run();
     }
 
-//    public static void main(String[] args) {
-//        GatewayServer server = new GatewayServer(new Main());
-//        server.start();
-//        System.out.println("Gateway server started");
-//    }
+    public static void main(String[] args) {
+        GatewayServer server = new GatewayServer(new Main());
+        server.start();
+        System.out.println("Gateway server started");
+    }
 }

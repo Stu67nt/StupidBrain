@@ -139,4 +139,11 @@ if __name__ == "__main__":
 
 	gateway = JavaGateway()
 	entry = gateway.entry_point
-	entry.DesertTempleFinder()
+	seeds = []
+	for x in range(1, 10000):
+		result = entry.DesertTempleChecker(x)
+
+		if result != None:
+			for seed in result:
+				seeds.append(seed)
+	print(seeds)

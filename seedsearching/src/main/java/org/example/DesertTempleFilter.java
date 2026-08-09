@@ -15,9 +15,10 @@ import com.seedfinding.mcfeature.structure.DesertPyramid;
 import com.seedfinding.mcfeature.structure.generator.structure.DesertPyramidGenerator;
 import com.seedfinding.mcterrain.TerrainGenerator;
 
+import java.util.LinkedList;
+
 public class DesertTempleFilter {
-    private long seedMin;
-    private long seedMax;
+    private LinkedList<Long> seeds = new LinkedList<Long>();
 
     private final int CHUNK_DIST = 5;
     private final MCVersion version = MCVersion.v1_16_1;
@@ -25,25 +26,14 @@ public class DesertTempleFilter {
     private final DesertPyramid dt = new DesertPyramid(version);
     private final DesertPyramidGenerator dtg = new DesertPyramidGenerator(version);
 
-    public DesertTempleFilter(long seedMin, long seedMax) {
-        this.seedMin = seedMin;
-        this.seedMax = seedMax;
-    }
+    public DesertTempleFilter() {}
 
-    public void run() {
-        long structureSeed;
-        for (structureSeed = this.seedMin; structureSeed < this.seedMax; structureSeed++){
-            checkSeed(structureSeed);
-        }
-    }
-
-
-    private void checkSeed(long structureSeed) {
+    public LinkedList<Long> checkSeed(long structureSeed) {
         CPos dtPos = dt.getInRegion(structureSeed, 0, 0, rand);
         BiomeSource obs = BiomeSource.of(Dimension.OVERWORLD, version, structureSeed);
 
         if (dtPos.distanceTo(CPos.ZERO, DistanceMetric.CHEBYSHEV) > CHUNK_DIST){
-            return;
+            return seeds;
         }
 
         TerrainGenerator otg = TerrainGenerator.of(obs);
@@ -51,12 +41,12 @@ public class DesertTempleFilter {
 
         boolean hasIron = checkChest(structureSeed, Items.IRON_INGOT, 7);
         boolean hasSufficient = checkChest(structureSeed, Items.IRON_INGOT, 4) && checkChest(structureSeed, Items.DIAMOND, 3);
-        boolean hadFood = checkChest(structureSeed, Items.ROTTEN_FLESH, 20);
+        boolean hadFood = checkChest(structureSeed, Items.ROTTEN_FLESH, 14);
 
         if (!((hasIron || hasSufficient) && hadFood)){
-            return;
+            return seeds;
         }
-
+        IO.println(String.format("Found a hit %s", structureSeed));
         WorldSeed.getSisterSeeds(structureSeed).asStream().boxed().limit(100).forEach(fullWorldSeed ->
         {
             BiomeSource sobs = BiomeSource.of(Dimension.OVERWORLD, version, fullWorldSeed);
@@ -68,10 +58,10 @@ public class DesertTempleFilter {
             if (spawnPoint.distanceTo(dtPos, DistanceMetric.CHEBYSHEV) > CHUNK_DIST) {
                 return;
             }
-
-            System.out.printf("seed: %s /tp %s ~ %s \n", fullWorldSeed, dtPos.getX()*16, dtPos.getZ()*16);
+            seeds.add(fullWorldSeed);
         });
 
+        return seeds;
     }
 
     private boolean checkChest(long structureSeed, Item item, int count){
