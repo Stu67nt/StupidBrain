@@ -14,7 +14,6 @@ import com.seedfinding.mcfeature.misc.SpawnPoint;
 import com.seedfinding.mcfeature.structure.DesertPyramid;
 import com.seedfinding.mcfeature.structure.generator.structure.DesertPyramidGenerator;
 import com.seedfinding.mcterrain.TerrainGenerator;
-import com.seedfinding.mcterrain.terrain.OverworldTerrainGenerator;
 
 public class DesertTempleFilter {
     private long seedMin;

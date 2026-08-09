@@ -18,7 +18,6 @@ import com.seedfinding.mcfeature.structure.Village;
 import com.seedfinding.mcterrain.TerrainGenerator;
 import com.seedfinding.mcterrain.terrain.OverworldTerrainGenerator;
 import profotoce59.properties.VillageGenerator;
-import profotoce59.reecriture.VillagePools.VillageStructureLoot;
 
 import java.util.List;
 

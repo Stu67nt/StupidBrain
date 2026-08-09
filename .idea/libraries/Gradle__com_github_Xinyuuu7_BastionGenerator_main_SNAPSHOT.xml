@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="Gradle: com.github.Xinyuuu7:BastionGenerator:main-SNAPSHOT" type="java-imported" external-system-id="GRADLE">
+    <properties groupId="com.github.Xinyuuu7" artifactId="BastionGenerator" version="main-SNAPSHOT" baseVersion="main-SNAPSHOT" />
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.github.Xinyuuu7/BastionGenerator/main-SNAPSHOT/fb317d7cb3ad838e1da69d5d872f0e16fa048900/BastionGenerator-main-SNAPSHOT.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.github.Xinyuuu7/BastionGenerator/main-SNAPSHOT/65e24b05adcd22f6817a57187572ebc69925d447/BastionGenerator-main-SNAPSHOT-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

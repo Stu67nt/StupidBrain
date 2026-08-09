@@ -19,6 +19,7 @@
     <orderEntry type="library" name="Gradle: com.seedfinding:mc_feature:1.171.10" level="project" />
     <orderEntry type="library" name="Gradle: com.github.profotoce59:VillageGenerator:main-SNAPSHOT" level="project" />
     <orderEntry type="library" name="Gradle: net.sf.py4j:py4j:0.10.9.7" level="project" />
+    <orderEntry type="library" name="Gradle: com.github.Xinyuuu7:BastionGenerator:main-SNAPSHOT" level="project" />
     <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.5.31" level="project" />
     <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib:1.5.31" level="project" />
     <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.5.31" level="project" />
