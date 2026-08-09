@@ -20,7 +20,7 @@ public class DesertTempleFilter {
     private long seedMin;
     private long seedMax;
 
-    private final int CHUNK_DIST = 4;
+    private final int CHUNK_DIST = 5;
     private final MCVersion version = MCVersion.v1_16_1;
     private final ChunkRand rand = new ChunkRand();
     private final DesertPyramid dt = new DesertPyramid(version);
@@ -52,8 +52,9 @@ public class DesertTempleFilter {
 
         boolean hasIron = checkChest(structureSeed, Items.IRON_INGOT, 7);
         boolean hasSufficient = checkChest(structureSeed, Items.IRON_INGOT, 4) && checkChest(structureSeed, Items.DIAMOND, 3);
+        boolean hadFood = checkChest(structureSeed, Items.ROTTEN_FLESH, 20);
 
-        if (!(hasIron || hasSufficient)){
+        if (!((hasIron || hasSufficient) && hadFood)){
             return;
         }
 
