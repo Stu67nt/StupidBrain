@@ -20,6 +20,7 @@ public class ShipwreckFilter {
     private long seedMax;
 
     private final int CHUNK_DIST = 4;
+    private final String[] INVALID_BIOMES = {"frozen_ocean", "deep_frozen_ocean", "warm_ocean", "lukewarm_ocean", "deep_lukewarm_ocean"};
     private final MCVersion version = MCVersion.v1_16_1;
     private final ChunkRand rand = new ChunkRand();
     private final Shipwreck sw = new Shipwreck(version);
@@ -57,6 +58,14 @@ public class ShipwreckFilter {
         {
             BiomeSource sobs = BiomeSource.of(Dimension.OVERWORLD, version, fullWorldSeed);
             CPos spawnPoint = SpawnPoint.getApproximateSpawn((OverworldBiomeSource) sobs).toChunkPos();
+            String biomeName = sobs.getBiome(swPos.getX()*16, 64, swPos.getZ()*16).getName();
+
+            for (String invalidBiome : INVALID_BIOMES) {
+                if (invalidBiome == biomeName) {
+                    return;
+                }
+            }
+
             if (!(sw.canSpawn(swPos, sobs))){
                 return;
             }
@@ -65,6 +74,7 @@ public class ShipwreckFilter {
                 return;
             }
 
+            IO.println(biomeName);
             System.out.printf("seed: %s /tp %s ~ %s \n", fullWorldSeed, swPos.getX()*16, swPos.getZ()*16);
         });
 
