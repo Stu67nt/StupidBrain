@@ -19,12 +19,11 @@ import com.seedfinding.mcterrain.TerrainGenerator;
 import com.seedfinding.mcterrain.terrain.OverworldTerrainGenerator;
 import profotoce59.properties.VillageGenerator;
 
+import java.util.LinkedList;
 import java.util.List;
 
 public class VillageFilter {
-    private long seedMin;
-    private long seedMax;
-
+    private LinkedList<Long> seeds = new LinkedList<Long>();
     private final int CHUNK_DIST = 6;
     private final MCVersion version = MCVersion.v1_16_1;
     private final ChunkRand rand = new ChunkRand();
@@ -32,29 +31,17 @@ public class VillageFilter {
     private final VillageGenerator vilg = new VillageGenerator(version);
 
 
-    public VillageFilter(long seedMin, long seedMax) {
-        this.seedMin = seedMin;
-        this.seedMax = seedMax;
-    }
+    public VillageFilter() {}
 
-    public void run() {
-        long structureSeed;
-        for (structureSeed = this.seedMin; structureSeed < this.seedMax; structureSeed++){
-            checkSeed(structureSeed);
-        }
-    }
-
-
-    private void checkSeed(long structureSeed) {
+    public LinkedList<Long> checkSeed(long structureSeed) {
         CPos vilPos = vil.getInRegion(structureSeed, 0, 0, rand);
 
         if (vilPos.distanceTo(CPos.ZERO, DistanceMetric.CHEBYSHEV) > CHUNK_DIST){
-            return;
+            return seeds;
         }
 
-
-        IO.println("Checking Sisters");
-        WorldSeed.getSisterSeeds(structureSeed).asStream().boxed().limit(1000).forEach(fullWorldSeed ->
+        IO.println(String.format("Found a hit %s", structureSeed));
+        WorldSeed.getSisterSeeds(structureSeed).asStream().boxed().limit(100).forEach(fullWorldSeed ->
         {
             BiomeSource sobs = BiomeSource.of(Dimension.OVERWORLD, version, fullWorldSeed);
             TerrainGenerator otg = TerrainGenerator.of(sobs);
@@ -84,9 +71,9 @@ public class VillageFilter {
             }
 
 
-            System.out.printf("seed: %s /tp %s ~ %s Blacksmiths: %s\n", fullWorldSeed, vilPos.getX()*16, vilPos.getZ()*16, vilg.getNumberOfBlackSmith());
+            seeds.add(fullWorldSeed);
         });
-
+        return seeds;
     }
 
     private boolean checkChest(Item item, int count, List<Pair<BPos, List<ItemStack>>> loot) {

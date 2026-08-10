@@ -11,9 +11,11 @@ public class Main {
         BastionFillter brFinder = new BastionFillter(seeds);
         return brFinder.checkSeeds();
     }
-    public void Village() {
-        VillageFilter finder = new VillageFilter(0L, 100000000L);
-        finder.run();
+    public LinkedList<Long> VillageChecker(long seed) {
+        VillageFilter vilFinder = new VillageFilter();
+        LinkedList<Long> seeds =  vilFinder.checkSeed(seed);
+        BastionFillter brFinder = new BastionFillter(seeds);
+        return brFinder.checkSeeds();
     }
     public LinkedList<Long> ShipwreckChecker(long seed) {
         ShipwreckFilter swFinder = new ShipwreckFilter();
@@ -34,16 +36,9 @@ public class Main {
         return brFinder.checkSeeds();
     }
 
-    public void main(String[] args) {
-        for (long i = 0L; i < 100000L; i++){
-            LinkedList<Long> results = BuriedTreasureChecker(i);
-            if (!results.isEmpty()){
-                IO.println(results);
-            }
-        }
-
-//        GatewayServer server = new GatewayServer(new Main());
-//        server.start();
-//        System.out.println("Gateway server started");
+    void main(String[] args) {
+        GatewayServer server = new GatewayServer(new Main());
+        server.start();
+        System.out.println("Gateway server started");
     }
 }
