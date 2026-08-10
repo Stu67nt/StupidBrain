@@ -15,9 +15,11 @@ public class Main {
         VillageFilter finder = new VillageFilter(0L, 100000000L);
         finder.run();
     }
-    public void Shipwreck() {
-        ShipwreckFilter finder = new ShipwreckFilter(0L, 100000000L);
-        finder.run();
+    public LinkedList<Long> ShipwreckChecker(long seed) {
+        ShipwreckFilter swFinder = new ShipwreckFilter();
+        LinkedList<Long> seeds =  swFinder.checkSeed(seed);
+        BastionFillter brFinder = new BastionFillter(seeds);
+        return brFinder.checkSeeds();
     }
     public void RuinedPortal() {
         RuinedPortalFilter finder = new RuinedPortalFilter(0L, 100000000L);
@@ -29,8 +31,15 @@ public class Main {
     }
 
     public void main(String[] args) {
-        GatewayServer server = new GatewayServer(new Main());
-        server.start();
-        System.out.println("Gateway server started");
+        for (long i = 60; i < 100000; i++){
+            LinkedList<Long> results = Shipwreck(i);
+            if (!results.isEmpty()){
+                IO.println(results);
+            }
+        }
+
+//        GatewayServer server = new GatewayServer(new Main());
+//        server.start();
+//        System.out.println("Gateway server started");
     }
 }

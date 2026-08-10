@@ -15,35 +15,26 @@ import com.seedfinding.mcfeature.structure.Shipwreck;
 import com.seedfinding.mcfeature.structure.generator.structure.ShipwreckGenerator;
 import com.seedfinding.mcterrain.TerrainGenerator;
 
-public class ShipwreckFilter {
-    private long seedMin;
-    private long seedMax;
+import java.util.LinkedList;
 
-    private final int CHUNK_DIST = 4;
-    private final String[] INVALID_BIOMES = {"frozen_ocean", "deep_frozen_ocean", "warm_ocean", "lukewarm_ocean", "deep_lukewarm_ocean"};
+public class ShipwreckFilter {
+    private LinkedList<Long> seeds = new LinkedList<Long>();
+
+    private final int CHUNK_DIST = 8;
+    private final String[] INVALID_BIOMES = {"frozen_ocean", "warm_ocean", "lukewarm_ocean"};
     private final MCVersion version = MCVersion.v1_16_1;
     private final ChunkRand rand = new ChunkRand();
     private final Shipwreck sw = new Shipwreck(version);
     private final ShipwreckGenerator swg = new ShipwreckGenerator(version);
 
-    public ShipwreckFilter(long seedMin, long seedMax) {
-        this.seedMin = seedMin;
-        this.seedMax = seedMax;
-    }
+    public ShipwreckFilter() {}
 
-    public void run() {
-        long structureSeed;
-        for (structureSeed = this.seedMin; structureSeed < this.seedMax; structureSeed++){
-            checkSeed(structureSeed);
-        }
-    }
-
-    private void checkSeed(long structureSeed) {
+    public LinkedList<Long> checkSeed(long structureSeed) {
         CPos swPos = sw.getInRegion(structureSeed, 0, 0, rand);
         BiomeSource obs = BiomeSource.of(Dimension.OVERWORLD, version, structureSeed);
 
         if (swPos.distanceTo(CPos.ZERO, DistanceMetric.CHEBYSHEV) > CHUNK_DIST){
-            return;
+            return seeds;
         }
 
         TerrainGenerator otg = TerrainGenerator.of(obs);
@@ -51,7 +42,7 @@ public class ShipwreckFilter {
 
         boolean ironCheck = checkChest(structureSeed, 7);
         if (!ironCheck) {
-            return;
+            return seeds;
         }
 
         WorldSeed.getSisterSeeds(structureSeed).asStream().boxed().limit(100).forEach(fullWorldSeed ->
@@ -74,10 +65,11 @@ public class ShipwreckFilter {
                 return;
             }
 
-            IO.println(biomeName);
-            System.out.printf("seed: %s /tp %s ~ %s \n", fullWorldSeed, swPos.getX()*16, swPos.getZ()*16);
-        });
+            IO.println(String.format("Found Valid shipwreck %s", swPos));
 
+            seeds.add(fullWorldSeed);
+        });
+        return seeds;
     }
 
     private boolean checkChest(long structureSeed, int count){

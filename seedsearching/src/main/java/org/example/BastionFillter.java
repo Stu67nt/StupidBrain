@@ -15,7 +15,7 @@ import java.util.LinkedList;
 public class BastionFillter {
     private LinkedList<Long> inputSeeds;
     private LinkedList<Long> outputSeeds = new LinkedList<Long>();
-    private final int CHUNK_DIST = 30;
+    private final int CHUNK_DIST = 12;
     private final MCVersion version = MCVersion.v1_16_1;
     private final ChunkRand rand = new ChunkRand();
     private final BastionRemnant br = new BastionRemnant(version);
@@ -49,6 +49,8 @@ public class BastionFillter {
             if (CPos.ZERO.distanceTo(brPos, DistanceMetric.CHEBYSHEV) > CHUNK_DIST) {
                 continue;
             }
+
+            IO.println(String.format("Found Valid bastion %s", brPos));
 
             outputSeeds.add(structureSeed);
         }
