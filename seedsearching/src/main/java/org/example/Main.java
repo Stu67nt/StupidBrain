@@ -27,14 +27,16 @@ public class Main {
         BastionFillter brFinder = new BastionFillter(seeds);
         return brFinder.checkSeeds();
     }
-    public void BuriedTreasure() {
-        BuriedTreasureFilter finder = new BuriedTreasureFilter(0L, 100000000L);
-        finder.run();
+    public LinkedList<Long> BuriedTreasureChecker(long seed) {
+        BuriedTreasureFilter btFinder = new BuriedTreasureFilter();
+        LinkedList<Long> seeds =  btFinder.checkSeed(seed);
+        BastionFillter brFinder = new BastionFillter(seeds);
+        return brFinder.checkSeeds();
     }
 
     public void main(String[] args) {
         for (long i = 0L; i < 100000L; i++){
-            LinkedList<Long> results = RuinedPortalChecker(i);
+            LinkedList<Long> results = BuriedTreasureChecker(i);
             if (!results.isEmpty()){
                 IO.println(results);
             }

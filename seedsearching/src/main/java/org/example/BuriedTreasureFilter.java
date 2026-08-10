@@ -16,43 +16,32 @@ import com.seedfinding.mcfeature.structure.generator.structure.BuriedTreasureGen
 import com.seedfinding.mcterrain.TerrainGenerator;
 import com.seedfinding.mcterrain.terrain.OverworldTerrainGenerator;
 
-public class BuriedTreasureFilter {
-    private long seedMin;
-    private long seedMax;
+import java.util.LinkedList;
 
-    private final int CHUNK_DIST = 6;
+public class BuriedTreasureFilter {
+    private LinkedList<Long> seeds = new LinkedList<Long>();
+    private final int CHUNK_DIST = 10;
     private final MCVersion version = MCVersion.v1_16_1;
     private final ChunkRand rand = new ChunkRand();
     private final BuriedTreasure bt = new BuriedTreasure(version);
     private final BuriedTreasureGenerator btg = new BuriedTreasureGenerator(version);
 
-    public BuriedTreasureFilter(long seedMin, long seedMax) {
-        this.seedMin = seedMin;
-        this.seedMax = seedMax;
-    }
+    public BuriedTreasureFilter() {}
 
-    public void run() {
-        long structureSeed;
-        for (structureSeed = this.seedMin; structureSeed < this.seedMax; structureSeed++){
-            checkSeed(structureSeed);
-        }
-    }
-
-
-    private void checkSeed(long structureSeed) {
+    public LinkedList<Long> checkSeed(long structureSeed) {
         CPos btPos = bt.getInRegion(structureSeed, 0, 0, rand);
         BiomeSource obs = BiomeSource.of(Dimension.OVERWORLD, version, structureSeed);
 
         if (btPos == null) {
-            return;
+            return seeds;
         }
 
         if (btPos.distanceTo(CPos.ZERO, DistanceMetric.CHEBYSHEV) > CHUNK_DIST){
-            return;
+            return seeds;
         }
 
         if (btPos.distanceTo(CPos.ZERO, DistanceMetric.CHEBYSHEV) > CHUNK_DIST){
-            return;
+            return seeds;
         }
 
         TerrainGenerator otg = TerrainGenerator.of(obs);
@@ -62,11 +51,11 @@ public class BuriedTreasureFilter {
         boolean hasSufficient = checkChest(structureSeed, Items.IRON_INGOT, 4) && checkChest(structureSeed, Items.DIAMOND, 3);
 
         if (!(hasIron || hasSufficient)){
-            return;
+            return seeds;
         }
 
-        IO.println("Checking Sisters");
-        WorldSeed.getSisterSeeds(structureSeed).asStream().boxed().limit(100).forEach(fullWorldSeed ->
+        IO.println(String.format("Found a hit %s", structureSeed));
+        WorldSeed.getSisterSeeds(structureSeed).asStream().boxed().limit(200).forEach(fullWorldSeed ->
         {
             BiomeSource sobs = BiomeSource.of(Dimension.OVERWORLD, version, fullWorldSeed);
             CPos spawnPoint = SpawnPoint.getApproximateSpawn((OverworldBiomeSource) sobs).toChunkPos();
@@ -78,9 +67,9 @@ public class BuriedTreasureFilter {
                 return;
             }
 
-            System.out.printf("seed: %s /tp %s ~ %s \n", fullWorldSeed, btPos.getX()*16, btPos.getZ()*16);
+            seeds.add(fullWorldSeed);
         });
-
+        return seeds;
     }
 
     private boolean checkChest(long structureSeed, Item item, int count){
