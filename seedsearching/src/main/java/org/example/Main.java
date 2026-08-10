@@ -21,9 +21,11 @@ public class Main {
         BastionFillter brFinder = new BastionFillter(seeds);
         return brFinder.checkSeeds();
     }
-    public void RuinedPortal() {
-        RuinedPortalFilter finder = new RuinedPortalFilter(0L, 100000000L);
-        finder.run();
+    public LinkedList<Long> RuinedPortalChecker(long seed) {
+        RuinedPortalFilter rpFinder = new RuinedPortalFilter();
+        LinkedList<Long> seeds = rpFinder.checkSeed(seed);
+        BastionFillter brFinder = new BastionFillter(seeds);
+        return brFinder.checkSeeds();
     }
     public void BuriedTreasure() {
         BuriedTreasureFilter finder = new BuriedTreasureFilter(0L, 100000000L);
@@ -31,8 +33,8 @@ public class Main {
     }
 
     public void main(String[] args) {
-        for (long i = 60; i < 100000; i++){
-            LinkedList<Long> results = Shipwreck(i);
+        for (long i = 0L; i < 100000L; i++){
+            LinkedList<Long> results = RuinedPortalChecker(i);
             if (!results.isEmpty()){
                 IO.println(results);
             }

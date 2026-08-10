@@ -15,7 +15,7 @@ import java.util.LinkedList;
 public class BastionFillter {
     private LinkedList<Long> inputSeeds;
     private LinkedList<Long> outputSeeds = new LinkedList<Long>();
-    private final int CHUNK_DIST = 12;
+    private final int CHUNK_DIST = 20;
     private final MCVersion version = MCVersion.v1_16_1;
     private final ChunkRand rand = new ChunkRand();
     private final BastionRemnant br = new BastionRemnant(version);

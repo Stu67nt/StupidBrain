@@ -16,56 +16,51 @@ import com.seedfinding.mcfeature.structure.generator.structure.RuinedPortalGener
 import com.seedfinding.mcterrain.TerrainGenerator;
 import com.seedfinding.mcterrain.terrain.OverworldTerrainGenerator;
 
-public class RuinedPortalFilter {
-    private long seedMin;
-    private long seedMax;
+import java.util.LinkedList;
 
-    private final int CHUNK_DIST = 4;
+public class RuinedPortalFilter {
+    private LinkedList<Long> seeds = new LinkedList<Long>();
+    private final int CHUNK_DIST = 6;
     private final MCVersion version = MCVersion.v1_16_1;
     private final ChunkRand rand = new ChunkRand();
     private final RuinedPortal portal = new RuinedPortal(Dimension.OVERWORLD, version);
     private final RuinedPortalGenerator rpg = new RuinedPortalGenerator(version);
 
-    public RuinedPortalFilter(long seedMin, long seedMax) {
-        this.seedMin = seedMin;
-        this.seedMax = seedMax;
-    }
+    public RuinedPortalFilter() {}
 
-    public void run() {
-        long structureSeed;
-        for (structureSeed = this.seedMin; structureSeed < this.seedMax; structureSeed++){
-            checkSeed(structureSeed);
-        }
-    }
-
-
-    private void checkSeed(long structureSeed) {
+    public LinkedList<Long> checkSeed(long structureSeed) {
         CPos rpPos = portal.getInRegion(structureSeed, 0, 0, rand);
         BiomeSource obs = BiomeSource.of(Dimension.OVERWORLD, version, structureSeed);
 
+        if (rpPos == null){
+            return seeds;
+        }
+
         if (rpPos.distanceTo(CPos.ZERO, DistanceMetric.CHEBYSHEV) > CHUNK_DIST){
-            return;
+            return seeds;
         }
 
         TerrainGenerator otg = TerrainGenerator.of(obs);
-        rpg.generate(otg, rpPos);
+        if (!rpg.generate(otg, rpPos)) {
+            return seeds;
+        }
         boolean hasFire = checkChest(structureSeed, Items.FIRE_CHARGE, 1);
         boolean hasNugs = checkChest(structureSeed, Items.IRON_NUGGET, 14);
         boolean hasObi = checkChest(structureSeed, Items.OBSIDIAN, 4);
 
         if (!hasFire){
-            return;
+            return seeds;
         }
 
         if (!hasNugs){
-            return;
+            return seeds;
         }
 
         if (!hasObi){
-            return;
+            return seeds;
         }
-
-        WorldSeed.getSisterSeeds(structureSeed).asStream().boxed().limit(1000).forEach(fullWorldSeed ->
+        IO.println(String.format("hit at seed %s", structureSeed));
+        WorldSeed.getSisterSeeds(structureSeed).asStream().boxed().limit(100).forEach(fullWorldSeed ->
         {
             BiomeSource sobs = BiomeSource.of(Dimension.OVERWORLD, version, fullWorldSeed);
             CPos spawnPoint = SpawnPoint.getApproximateSpawn((OverworldBiomeSource) sobs).toChunkPos();
@@ -77,9 +72,9 @@ public class RuinedPortalFilter {
                 return;
             }
 
-            System.out.printf("seed: %s /tp %s ~ %s \n", fullWorldSeed, rpPos.getX()*16, rpPos.getZ()*16);
+            seeds.add(fullWorldSeed);
         });
-
+        return seeds;
     }
 
     private boolean checkChest(long structureSeed, Item item, int count){
