@@ -15,12 +15,12 @@ import com.seedfinding.mcfeature.structure.DesertPyramid;
 import com.seedfinding.mcfeature.structure.generator.structure.DesertPyramidGenerator;
 import com.seedfinding.mcterrain.TerrainGenerator;
 
-import java.util.LinkedList;
+import java.util.List;
 
 public class DesertTempleFilter {
-    private LinkedList<Long> seeds = new LinkedList<Long>();
+    private List<Long> seeds = new java.util.ArrayList<>();
 
-    private final int CHUNK_DIST = 20;
+    private final int CHUNK_DIST = 8;
     private final MCVersion version = MCVersion.v1_16_1;
     private final ChunkRand rand = new ChunkRand();
     private final DesertPyramid dt = new DesertPyramid(version);
@@ -28,7 +28,7 @@ public class DesertTempleFilter {
 
     public DesertTempleFilter() {}
 
-    public LinkedList<Long> checkSeed(long structureSeed) {
+    public List<Long> checkSeed(long structureSeed) {
         CPos dtPos = dt.getInRegion(structureSeed, 0, 0, rand);
         BiomeSource obs = BiomeSource.of(Dimension.OVERWORLD, version, structureSeed);
 
@@ -46,23 +46,22 @@ public class DesertTempleFilter {
             return seeds;
         }
         IO.println(String.format("Found a hit %s", structureSeed));
-        WorldSeed.getSisterSeeds(structureSeed).asStream().boxed().limit(500).forEach(fullWorldSeed ->
+        List<Long> result = WorldSeed.getSisterSeeds(structureSeed).asStream().boxed().limit(5000).parallel().filter(fullWorldSeed ->
         {
             BiomeSource sobs = BiomeSource.of(Dimension.OVERWORLD, version, fullWorldSeed);
             CPos spawnPoint = SpawnPoint.getApproximateSpawn((OverworldBiomeSource) sobs).toChunkPos();
             if (!(dt.canSpawn(dtPos, sobs))){
-                return;
+                return false;
             }
 
             if (spawnPoint.distanceTo(dtPos, DistanceMetric.CHEBYSHEV) > CHUNK_DIST) {
-                return;
+                return false;
             }
-            seeds.add(fullWorldSeed);
-        });
+            return true;
+        }).toList();
 
-        return seeds;
+        return result;
     }
-
     private boolean checkChest(long structureSeed, Item item, int count){
         var loot = dt.getLoot(structureSeed, dtg, rand, false);
 

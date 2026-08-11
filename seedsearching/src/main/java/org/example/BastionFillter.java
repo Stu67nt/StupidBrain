@@ -9,54 +9,50 @@ import com.seedfinding.mccore.util.pos.CPos;
 import com.seedfinding.mccore.version.MCVersion;
 import com.seedfinding.mcfeature.structure.BastionRemnant;
 
-import java.util.LinkedList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 
 public class BastionFillter {
-    private LinkedList<Long> inputSeeds;
-    private LinkedList<Long> outputSeeds = new LinkedList<Long>();
-    private final int CHUNK_DIST = 24;
+    private List<Long> inputSeeds;
+    private List<Long> outputSeeds;
+    private final int CHUNK_DIST = 14;
     private final MCVersion version = MCVersion.v1_16_1;
-    private final ChunkRand rand = new ChunkRand();
-    private final BastionRemnant br = new BastionRemnant(version);
-    private final BastionGenerator brg = new BastionGenerator(version);
 
-    public BastionFillter(LinkedList<Long> inputSeeds) {
+
+    public BastionFillter(List<Long> inputSeeds) {
         this.inputSeeds = inputSeeds;
     }
 
-    public LinkedList<Long> checkSeeds() {
-        for (int i = 0; i < inputSeeds.size(); i++){
-            long structureSeed = this.inputSeeds.get(i);
-            CPos brPos = br.getInRegion(structureSeed, 0 ,0, rand);
-            if (brPos == null){
-                continue;
-            }
+    public List<Long> checkSeeds() {
+        outputSeeds = inputSeeds.parallelStream().filter(this::checkIndivSeed).toList();
+        return outputSeeds;
+    }
 
-            if (brPos.distanceTo(CPos.ZERO, DistanceMetric.CHEBYSHEV) > CHUNK_DIST){
-                continue;
-            }
+    private boolean checkIndivSeed(long seed){
+        final ChunkRand rand = new ChunkRand();
+        final BastionRemnant br = new BastionRemnant(version);
+        final BastionGenerator brg = new BastionGenerator(version);
 
-            if (!(brg.generate(structureSeed, brPos))){
-                continue;
-            }
-
-            BiomeSource snbs = BiomeSource.of(Dimension.NETHER, version, structureSeed);
-            if (!(br.canSpawn(brPos, snbs))){
-                continue;
-            }
-
-            if (CPos.ZERO.distanceTo(brPos, DistanceMetric.CHEBYSHEV) > CHUNK_DIST) {
-                continue;
-            }
-
-            IO.println(String.format("Found Valid bastion %s", brPos));
-
-            outputSeeds.add(structureSeed);
+        CPos brPos = br.getInRegion(seed, 0 ,0, rand);
+        if (brPos == null){
+            return false;
         }
 
+        if (brPos.distanceTo(CPos.ZERO, DistanceMetric.CHEBYSHEV) > CHUNK_DIST){
+            return false;
+        }
 
-        return outputSeeds;
+        if (!(brg.generate(seed, brPos))){
+            return false;
+        }
+
+        BiomeSource snbs = BiomeSource.of(Dimension.NETHER, version, seed);
+        if (!(br.canSpawn(brPos, snbs))){
+            return false;
+        }
+
+        return true;
     }
 
     public String getBastionType(BastionGenerator bastionGenerator){
