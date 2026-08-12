@@ -22,7 +22,7 @@ import java.util.Objects;
 public class ShipwreckFilter {
     private List<Long> seeds = new java.util.ArrayList<>();
 
-    private final int CHUNK_DIST = 8;
+    private final int CHUNK_DIST = 4;
     private final String[] INVALID_BIOMES = {"frozen_ocean", "warm_ocean", "lukewarm_ocean"};
     private final MCVersion version = MCVersion.v1_16_1;
     private final ChunkRand rand = new ChunkRand();
@@ -50,7 +50,13 @@ public class ShipwreckFilter {
         IO.println(String.format("Hit at seed %s", structureSeed));
         seeds = WorldSeed.getSisterSeeds(structureSeed).asStream().boxed().limit(1000).parallel()
                 .filter(fullWorldSeed -> {
+
             BiomeSource sobs = BiomeSource.of(Dimension.OVERWORLD, version, fullWorldSeed);
+
+            if (!(sw.canSpawn(swPos, sobs))){
+                return false;
+            }
+
             String biomeName = sobs.getBiome(swPos.getX()*16, 64, swPos.getZ()*16).getName();
 
             for (String invalidBiome : INVALID_BIOMES) {
@@ -59,9 +65,6 @@ public class ShipwreckFilter {
                 }
             }
 
-            if (!(sw.canSpawn(swPos, sobs))){
-                return false;
-            }
             CPos spawnPoint = SpawnPoint.getApproximateSpawn((OverworldBiomeSource) sobs).toChunkPos();
             if (spawnPoint.distanceTo(swPos, DistanceMetric.CHEBYSHEV) > CHUNK_DIST) {
                 return false;
