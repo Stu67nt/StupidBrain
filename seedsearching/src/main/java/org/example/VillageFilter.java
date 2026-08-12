@@ -23,17 +23,17 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class VillageFilter {
-    private LinkedList<Long> seeds = new LinkedList<Long>();
+    private List<Long> seeds = new java.util.ArrayList<>();
     private final int CHUNK_DIST = 6;
     private final MCVersion version = MCVersion.v1_16_1;
     private final ChunkRand rand = new ChunkRand();
     private final Village vil = new Village(version);
-    private final VillageGenerator vilg = new VillageGenerator(version);
+
 
 
     public VillageFilter() {}
 
-    public LinkedList<Long> checkSeed(long structureSeed) {
+    public List<Long> checkSeed(long structureSeed) {
         CPos vilPos = vil.getInRegion(structureSeed, 0, 0, rand);
 
         if (vilPos.distanceTo(CPos.ZERO, DistanceMetric.CHEBYSHEV) > CHUNK_DIST){
@@ -41,25 +41,28 @@ public class VillageFilter {
         }
 
         IO.println(String.format("Found a hit %s", structureSeed));
-        WorldSeed.getSisterSeeds(structureSeed).asStream().boxed().limit(100).forEach(fullWorldSeed ->
+        seeds = WorldSeed.getSisterSeeds(structureSeed).asStream().boxed().limit(1000).parallel().filter(fullWorldSeed ->
         {
+            ChunkRand rand = new ChunkRand();
+            Village vil = new Village(version);
+            VillageGenerator vilg = new VillageGenerator(version);
             BiomeSource sobs = BiomeSource.of(Dimension.OVERWORLD, version, fullWorldSeed);
             TerrainGenerator otg = TerrainGenerator.of(sobs);
             if (!vilg.generate(otg, vilPos)) {
-                return;
+                return false;
             }
 
             if ((vilg.getNumberOfBlackSmith() < 1)){
-                return;
+                return false;
             }
             CPos spawnPoint = SpawnPoint.getApproximateSpawn((OverworldBiomeSource) sobs).toChunkPos();
             TerrainGenerator sotg = TerrainGenerator.of(sobs);
             if (!(vil.canSpawn(vilPos, sobs))){
-                return;
+                return false;
             }
 
             if (spawnPoint.distanceTo(vilPos, DistanceMetric.CHEBYSHEV) > CHUNK_DIST) {
-                return;
+                return false;
             }
             List<Pair<BPos, List<ItemStack>>> loot = vilg.generateLoot((OverworldTerrainGenerator) sotg, rand);
 
@@ -67,12 +70,12 @@ public class VillageFilter {
             boolean hasSufficient = checkChest(Items.IRON_INGOT, 1, loot) && checkChest(Items.DIAMOND, 3, loot);
 
             if (!(hasIron || hasSufficient)){
-                return;
+                return false;
             }
 
 
-            seeds.add(fullWorldSeed);
-        });
+            return true;
+        }).toList();
         return seeds;
     }
 

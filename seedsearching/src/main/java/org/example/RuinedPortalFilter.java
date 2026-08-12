@@ -14,12 +14,11 @@ import com.seedfinding.mcfeature.misc.SpawnPoint;
 import com.seedfinding.mcfeature.structure.RuinedPortal;
 import com.seedfinding.mcfeature.structure.generator.structure.RuinedPortalGenerator;
 import com.seedfinding.mcterrain.TerrainGenerator;
-import com.seedfinding.mcterrain.terrain.OverworldTerrainGenerator;
 
-import java.util.LinkedList;
+import java.util.List;
 
 public class RuinedPortalFilter {
-    private LinkedList<Long> seeds = new LinkedList<Long>();
+    private List<Long> seeds = new java.util.ArrayList<>();
     private final int CHUNK_DIST = 6;
     private final MCVersion version = MCVersion.v1_16_1;
     private final ChunkRand rand = new ChunkRand();
@@ -28,7 +27,7 @@ public class RuinedPortalFilter {
 
     public RuinedPortalFilter() {}
 
-    public LinkedList<Long> checkSeed(long structureSeed) {
+    public List<Long> checkSeed(long structureSeed) {
         CPos rpPos = portal.getInRegion(structureSeed, 0, 0, rand);
         BiomeSource obs = BiomeSource.of(Dimension.OVERWORLD, version, structureSeed);
 
@@ -45,8 +44,7 @@ public class RuinedPortalFilter {
             return seeds;
         }
         boolean hasFire = checkChest(structureSeed, Items.FIRE_CHARGE, 1);
-        boolean hasNugs = checkChest(structureSeed, Items.IRON_NUGGET, 14);
-        boolean hasObi = checkChest(structureSeed, Items.OBSIDIAN, 4);
+        boolean hasNugs = checkChest(structureSeed, Items.IRON_NUGGET, 27);
 
         if (!hasFire){
             return seeds;
@@ -56,24 +54,21 @@ public class RuinedPortalFilter {
             return seeds;
         }
 
-        if (!hasObi){
-            return seeds;
-        }
         IO.println(String.format("hit at seed %s", structureSeed));
-        WorldSeed.getSisterSeeds(structureSeed).asStream().boxed().limit(100).forEach(fullWorldSeed ->
-        {
+        seeds = WorldSeed.getSisterSeeds(structureSeed).asStream().boxed().limit(1000).parallel()
+                .filter(fullWorldSeed -> {
             BiomeSource sobs = BiomeSource.of(Dimension.OVERWORLD, version, fullWorldSeed);
-            CPos spawnPoint = SpawnPoint.getApproximateSpawn((OverworldBiomeSource) sobs).toChunkPos();
             if (!(portal.canSpawn(rpPos, sobs))){
-                return;
+                return false;
             }
 
+            CPos spawnPoint = SpawnPoint.getApproximateSpawn((OverworldBiomeSource) sobs).toChunkPos();
             if (spawnPoint.distanceTo(rpPos, DistanceMetric.CHEBYSHEV) > CHUNK_DIST) {
-                return;
+                return false;
             }
 
-            seeds.add(fullWorldSeed);
-        });
+            return true;
+        }).toList();
         return seeds;
     }
 
