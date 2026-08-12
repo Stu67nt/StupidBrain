@@ -4,7 +4,6 @@ import py4j.GatewayServer;
 
 
 import java.util.List;
-import java.util.stream.IntStream;
 
 public class Main {
     public List<Long> DesertTempleChecker(long seed) {
@@ -31,12 +30,12 @@ public class Main {
 //        BastionFillter brFinder = new BastionFillter(seeds);
 //        return brFinder.checkSeeds();
 //    }
-//    public LinkedList<Long> BuriedTreasureChecker(long seed) {
-//        BuriedTreasureFilter btFinder = new BuriedTreasureFilter();
-//        LinkedList<Long> seeds =  btFinder.checkSeed(seed);
-//        BastionFillter brFinder = new BastionFillter(seeds);
-//        return brFinder.checkSeeds();
-//    }
+    public List<Long> BuriedTreasureChecker(long seed) {
+        BuriedTreasureFilter btFinder = new BuriedTreasureFilter();
+        List<Long> seeds =  btFinder.checkSeed(seed);
+        BastionFillter brFinder = new BastionFillter(seeds);
+        return brFinder.checkSeeds();
+    }
 
     void main(String[] args) {
         GatewayServer server = new GatewayServer(new Main());

@@ -46,14 +46,15 @@ public class DesertTempleFilter {
             return seeds;
         }
         IO.println(String.format("Found a hit %s", structureSeed));
-        List<Long> result = WorldSeed.getSisterSeeds(structureSeed).asStream().boxed().limit(5000).parallel().filter(fullWorldSeed ->
+        List<Long> result = WorldSeed.getSisterSeeds(structureSeed).asStream().boxed().limit(1000).parallel().filter(fullWorldSeed ->
         {
             BiomeSource sobs = BiomeSource.of(Dimension.OVERWORLD, version, fullWorldSeed);
-            CPos spawnPoint = SpawnPoint.getApproximateSpawn((OverworldBiomeSource) sobs).toChunkPos();
             if (!(dt.canSpawn(dtPos, sobs))){
                 return false;
             }
 
+
+            CPos spawnPoint = SpawnPoint.getApproximateSpawn((OverworldBiomeSource) sobs).toChunkPos();
             if (spawnPoint.distanceTo(dtPos, DistanceMetric.CHEBYSHEV) > CHUNK_DIST) {
                 return false;
             }

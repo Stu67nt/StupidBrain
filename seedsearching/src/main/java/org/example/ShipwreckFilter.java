@@ -32,6 +32,7 @@ public class ShipwreckFilter {
     public ShipwreckFilter() {}
 
     public List<Long> checkSeed(long structureSeed) {
+
         CPos swPos = sw.getInRegion(structureSeed, 0, 0, rand);
         BiomeSource obs = BiomeSource.of(Dimension.OVERWORLD, version, structureSeed);
 

@@ -14,13 +14,12 @@ import com.seedfinding.mcfeature.misc.SpawnPoint;
 import com.seedfinding.mcfeature.structure.BuriedTreasure;
 import com.seedfinding.mcfeature.structure.generator.structure.BuriedTreasureGenerator;
 import com.seedfinding.mcterrain.TerrainGenerator;
-import com.seedfinding.mcterrain.terrain.OverworldTerrainGenerator;
 
-import java.util.LinkedList;
+import java.util.List;
 
 public class BuriedTreasureFilter {
-    private LinkedList<Long> seeds = new LinkedList<Long>();
-    private final int CHUNK_DIST = 10;
+    private List<Long> seeds = new java.util.ArrayList<>();
+    private final int CHUNK_DIST = 6;
     private final MCVersion version = MCVersion.v1_16_1;
     private final ChunkRand rand = new ChunkRand();
     private final BuriedTreasure bt = new BuriedTreasure(version);
@@ -28,7 +27,7 @@ public class BuriedTreasureFilter {
 
     public BuriedTreasureFilter() {}
 
-    public LinkedList<Long> checkSeed(long structureSeed) {
+    public List<Long> checkSeed(long structureSeed) {
         CPos btPos = bt.getInRegion(structureSeed, 0, 0, rand);
         BiomeSource obs = BiomeSource.of(Dimension.OVERWORLD, version, structureSeed);
 
@@ -55,20 +54,19 @@ public class BuriedTreasureFilter {
         }
 
         IO.println(String.format("Found a hit %s", structureSeed));
-        WorldSeed.getSisterSeeds(structureSeed).asStream().boxed().limit(200).forEach(fullWorldSeed ->
+        seeds = WorldSeed.getSisterSeeds(structureSeed).asStream().boxed().limit(1000).parallel().filter(fullWorldSeed ->
         {
+            BuriedTreasure bt = new BuriedTreasure(version);
             BiomeSource sobs = BiomeSource.of(Dimension.OVERWORLD, version, fullWorldSeed);
-            CPos spawnPoint = SpawnPoint.getApproximateSpawn((OverworldBiomeSource) sobs).toChunkPos();
             if (!(bt.canSpawn(btPos, sobs))){
-                return;
+                return false;
             }
-
+            CPos spawnPoint = SpawnPoint.getApproximateSpawn((OverworldBiomeSource) sobs).toChunkPos();
             if (spawnPoint.distanceTo(btPos, DistanceMetric.CHEBYSHEV) > CHUNK_DIST) {
-                return;
+                return false;
             }
-
-            seeds.add(fullWorldSeed);
-        });
+            return true;
+        }).toList();
         return seeds;
     }
 
