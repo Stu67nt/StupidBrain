@@ -16,9 +16,11 @@ import com.seedfinding.mcfeature.structure.generator.structure.ShipwreckGenerato
 import com.seedfinding.mcterrain.TerrainGenerator;
 
 import java.util.LinkedList;
+import java.util.List;
+import java.util.Objects;
 
 public class ShipwreckFilter {
-    private LinkedList<Long> seeds = new LinkedList<Long>();
+    private List<Long> seeds = new java.util.ArrayList<>();
 
     private final int CHUNK_DIST = 8;
     private final String[] INVALID_BIOMES = {"frozen_ocean", "warm_ocean", "lukewarm_ocean"};
@@ -29,7 +31,7 @@ public class ShipwreckFilter {
 
     public ShipwreckFilter() {}
 
-    public LinkedList<Long> checkSeed(long structureSeed) {
+    public List<Long> checkSeed(long structureSeed) {
         CPos swPos = sw.getInRegion(structureSeed, 0, 0, rand);
         BiomeSource obs = BiomeSource.of(Dimension.OVERWORLD, version, structureSeed);
 
@@ -44,31 +46,29 @@ public class ShipwreckFilter {
         if (!ironCheck) {
             return seeds;
         }
-
-        WorldSeed.getSisterSeeds(structureSeed).asStream().boxed().limit(100).forEach(fullWorldSeed ->
-        {
+        IO.println(String.format("Hit at seed %s", structureSeed));
+        seeds = WorldSeed.getSisterSeeds(structureSeed).asStream().boxed().limit(1000).parallel()
+                .filter(fullWorldSeed -> {
             BiomeSource sobs = BiomeSource.of(Dimension.OVERWORLD, version, fullWorldSeed);
-            CPos spawnPoint = SpawnPoint.getApproximateSpawn((OverworldBiomeSource) sobs).toChunkPos();
             String biomeName = sobs.getBiome(swPos.getX()*16, 64, swPos.getZ()*16).getName();
 
             for (String invalidBiome : INVALID_BIOMES) {
-                if (invalidBiome == biomeName) {
-                    return;
+                if (Objects.equals(invalidBiome, biomeName)) {
+                    return false;
                 }
             }
 
             if (!(sw.canSpawn(swPos, sobs))){
-                return;
+                return false;
             }
-
+            CPos spawnPoint = SpawnPoint.getApproximateSpawn((OverworldBiomeSource) sobs).toChunkPos();
             if (spawnPoint.distanceTo(swPos, DistanceMetric.CHEBYSHEV) > CHUNK_DIST) {
-                return;
+                return false;
             }
 
-            IO.println(String.format("Found Valid shipwreck %s", swPos));
-
-            seeds.add(fullWorldSeed);
-        });
+            return true;
+        }).toList();
+        IO.println("Done seed");
         return seeds;
     }
 

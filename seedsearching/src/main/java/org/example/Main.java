@@ -13,18 +13,18 @@ public class Main {
         BastionFillter brFinder = new BastionFillter(seeds);
         return brFinder.checkSeeds();
     }
-//    public LinkedList<Long> VillageChecker(long seed) {
+//    public List<Long> VillageChecker(long seed) {
 //        VillageFilter vilFinder = new VillageFilter();
-//        LinkedList<Long> seeds =  vilFinder.checkSeed(seed);
+//        List<Long> seeds =  vilFinder.checkSeed(seed);
 //        BastionFillter brFinder = new BastionFillter(seeds);
 //        return brFinder.checkSeeds();
 //    }
-//    public LinkedList<Long> ShipwreckChecker(long seed) {
-//        ShipwreckFilter swFinder = new ShipwreckFilter();
-//        LinkedList<Long> seeds =  swFinder.checkSeed(seed);
-//        BastionFillter brFinder = new BastionFillter(seeds);
-//        return brFinder.checkSeeds();
-//    }
+    public List<Long> ShipwreckChecker(long seed) {
+        ShipwreckFilter swFinder = new ShipwreckFilter();
+        List<Long> seeds =  swFinder.checkSeed(seed);
+        BastionFillter brFinder = new BastionFillter(seeds);
+        return brFinder.checkSeeds();
+    }
 //    public LinkedList<Long> RuinedPortalChecker(long seed) {
 //        RuinedPortalFilter rpFinder = new RuinedPortalFilter();
 //        LinkedList<Long> seeds = rpFinder.checkSeed(seed);
