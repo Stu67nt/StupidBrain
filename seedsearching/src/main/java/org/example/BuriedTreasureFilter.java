@@ -39,10 +39,6 @@ public class BuriedTreasureFilter {
             return seeds;
         }
 
-        if (btPos.distanceTo(CPos.ZERO, DistanceMetric.CHEBYSHEV) > CHUNK_DIST){
-            return seeds;
-        }
-
         TerrainGenerator otg = TerrainGenerator.of(obs);
         btg.generate(otg, btPos);
 
@@ -53,7 +49,6 @@ public class BuriedTreasureFilter {
             return seeds;
         }
 
-        IO.println(String.format("Found a hit %s", structureSeed));
         seeds = WorldSeed.getSisterSeeds(structureSeed).asStream().boxed().limit(1000).parallel().filter(fullWorldSeed ->
         {
             BuriedTreasure bt = new BuriedTreasure(version);

@@ -1,5 +1,7 @@
 plugins {
     id("java")
+    id ("application")
+    id ("com.gradleup.shadow") version "8.3.5"
 }
 
 group = "org.example"
@@ -9,6 +11,10 @@ repositories {
     mavenCentral()
     maven("https://maven.seedfinding.com")
     maven("https://jitpack.io")
+}
+
+application {
+    mainClass.set("org.example.Main")
 }
 
 dependencies {

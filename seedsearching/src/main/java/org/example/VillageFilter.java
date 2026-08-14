@@ -19,7 +19,6 @@ import com.seedfinding.mcterrain.TerrainGenerator;
 import com.seedfinding.mcterrain.terrain.OverworldTerrainGenerator;
 import profotoce59.properties.VillageGenerator;
 
-import java.util.LinkedList;
 import java.util.List;
 
 public class VillageFilter {
@@ -40,7 +39,6 @@ public class VillageFilter {
             return seeds;
         }
 
-        IO.println(String.format("Found a hit %s", structureSeed));
         seeds = WorldSeed.getSisterSeeds(structureSeed).asStream().boxed().limit(1000).parallel().filter(fullWorldSeed ->
         {
             ChunkRand rand = new ChunkRand();

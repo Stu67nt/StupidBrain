@@ -45,7 +45,6 @@ public class DesertTempleFilter {
         if (!((hasIron || hasSufficient))){
             return seeds;
         }
-        IO.println(String.format("Found a hit %s", structureSeed));
         List<Long> result = WorldSeed.getSisterSeeds(structureSeed).asStream().boxed().limit(1000).parallel().filter(fullWorldSeed ->
         {
             BiomeSource sobs = BiomeSource.of(Dimension.OVERWORLD, version, fullWorldSeed);

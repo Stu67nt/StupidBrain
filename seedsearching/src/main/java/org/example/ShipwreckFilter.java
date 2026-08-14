@@ -8,16 +8,13 @@ import com.seedfinding.mccore.state.Dimension;
 import com.seedfinding.mccore.util.math.DistanceMetric;
 import com.seedfinding.mccore.util.pos.CPos;
 import com.seedfinding.mccore.version.MCVersion;
-import com.seedfinding.mcfeature.loot.item.Item;
 import com.seedfinding.mcfeature.loot.item.Items;
 import com.seedfinding.mcfeature.misc.SpawnPoint;
 import com.seedfinding.mcfeature.structure.Shipwreck;
 import com.seedfinding.mcfeature.structure.generator.structure.ShipwreckGenerator;
 import com.seedfinding.mcterrain.TerrainGenerator;
 
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Objects;
 
 public class ShipwreckFilter {
     private List<Long> seeds = new java.util.ArrayList<>();
@@ -36,6 +33,10 @@ public class ShipwreckFilter {
         CPos swPos = sw.getInRegion(structureSeed, 0, 0, rand);
         BiomeSource obs = BiomeSource.of(Dimension.OVERWORLD, version, structureSeed);
 
+        if (swPos == null) {
+            return seeds;
+        }
+
         if (swPos.distanceTo(CPos.ZERO, DistanceMetric.CHEBYSHEV) > CHUNK_DIST){
             return seeds;
         }
@@ -47,22 +48,13 @@ public class ShipwreckFilter {
         if (!ironCheck) {
             return seeds;
         }
-        IO.println(String.format("Hit at seed %s", structureSeed));
         seeds = WorldSeed.getSisterSeeds(structureSeed).asStream().boxed().limit(1000).parallel()
                 .filter(fullWorldSeed -> {
-
+            Shipwreck sw = new Shipwreck(version);
             BiomeSource sobs = BiomeSource.of(Dimension.OVERWORLD, version, fullWorldSeed);
 
             if (!(sw.canSpawn(swPos, sobs))){
                 return false;
-            }
-
-            String biomeName = sobs.getBiome(swPos.getX()*16, 64, swPos.getZ()*16).getName();
-
-            for (String invalidBiome : INVALID_BIOMES) {
-                if (Objects.equals(invalidBiome, biomeName)) {
-                    return false;
-                }
             }
 
             CPos spawnPoint = SpawnPoint.getApproximateSpawn((OverworldBiomeSource) sobs).toChunkPos();
@@ -72,7 +64,6 @@ public class ShipwreckFilter {
 
             return true;
         }).toList();
-        IO.println("Done seed");
         return seeds;
     }
 

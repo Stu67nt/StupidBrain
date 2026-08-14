@@ -10,7 +10,6 @@ import com.seedfinding.mccore.version.MCVersion;
 import com.seedfinding.mcfeature.structure.BastionRemnant;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 
 public class BastionFillter {
