@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="Gradle: net.lecousin.compression:gzip:0.1.10" type="java-imported" external-system-id="GRADLE">
+    <properties groupId="net.lecousin.compression" artifactId="gzip" version="0.1.10" baseVersion="0.1.10" />
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/net.lecousin.compression/gzip/0.1.10/f5b7b26a75544bfe4b6eac6236b7b326aeee26e1/gzip-0.1.10.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/net.lecousin.compression/gzip/0.1.10/80c714fdfaa0a26b6391fe4a88754264f385b5a6/gzip-0.1.10-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

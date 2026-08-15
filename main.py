@@ -1,10 +1,12 @@
 import math
+import subprocess
 import sys
-from PySide6.QtGui import QIcon
 from calc_math import *
 from gui import *
+from seedsearch import *
+from PySide6.QtGui import QIcon
 from PySide6 import QtWidgets
-from PySide6.QtCore import QThreadPool, Slot, QObject, Signal, Qt
+from PySide6.QtCore import Slot, QObject, Signal, Qt
 
 def standarise_degrees(mc_ang:float):
 	"""Keeps angles between minecraft's normal -180 - 180 range"""
@@ -123,9 +125,10 @@ class Calc(QtCore.QRunnable):
 
 if __name__ == "__main__":
 	g_set = precompute_g_set()
+
 	app = QtWidgets.QApplication()
 	widget = MainWindow(g_set)
-	widget.setFixedSize(400, 300)
+	widget.setFixedSize(545, 335)
 	widget.setWindowOpacity(0.95)
 	widget.setWindowTitle("StupidBrain Calc")
 	widget.setWindowIcon(QIcon("assets/icon.png"))

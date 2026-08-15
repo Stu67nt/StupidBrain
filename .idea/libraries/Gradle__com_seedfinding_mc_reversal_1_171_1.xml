@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="Gradle: com.seedfinding:mc_reversal:1.171.1" type="java-imported" external-system-id="GRADLE">
+    <properties groupId="com.seedfinding" artifactId="mc_reversal" version="1.171.1" baseVersion="1.171.1" />
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.seedfinding/mc_reversal/1.171.1/4b0902fee729d34ebf57b4e5a98fed87ce44aebf/mc_reversal-1.171.1.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.seedfinding/mc_reversal/1.171.1/1d0b836f18bcb88766ea7e1fe9c8d8ed3e32aa03/mc_reversal-1.171.1-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

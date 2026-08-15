@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="Gradle: com.seedfinding:mc_math:1.171.0" type="java-imported" external-system-id="GRADLE">
+    <properties groupId="com.seedfinding" artifactId="mc_math" version="1.171.0" baseVersion="1.171.0" />
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.seedfinding/mc_math/1.171.0/6c7d6e90069bf67652641f47bdb19c009d5f7e0/mc_math-1.171.0.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.seedfinding/mc_math/1.171.0/1b4721ad8b4c89c8dab7002665ebe8683c25442c/mc_math-1.171.0-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

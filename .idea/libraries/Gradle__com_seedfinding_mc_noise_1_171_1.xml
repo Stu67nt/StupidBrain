@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="Gradle: com.seedfinding:mc_noise:1.171.1" type="java-imported" external-system-id="GRADLE">
+    <properties groupId="com.seedfinding" artifactId="mc_noise" version="1.171.1" baseVersion="1.171.1" />
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.seedfinding/mc_noise/1.171.1/2655e4d01a74dcceefdecbc3ca1bc53d8d93d9/mc_noise-1.171.1.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.seedfinding/mc_noise/1.171.1/88530a46894db8e04e968ca1abf0393aa11af9be/mc_noise-1.171.1-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

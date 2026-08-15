@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module external.linked.project.id="seedsearching:main" external.linked.project.path="$MODULE_DIR$/../../seedsearching" external.root.project.path="$MODULE_DIR$/../../seedsearching" external.system.id="GRADLE" external.system.module.group="org.example" external.system.module.type="sourceSet" external.system.module.version="1.0-SNAPSHOT" type="JAVA_MODULE" version="4">
+  <component name="NewModuleRootManager">
+    <output url="file://$MODULE_DIR$/../../seedsearching/build/classes/java/main" />
+    <exclude-output />
+    <content url="file://$MODULE_DIR$/../../seedsearching/src/main">
+      <sourceFolder url="file://$MODULE_DIR$/../../seedsearching/src/main/java" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/../../seedsearching/src/main/resources" type="java-resource" />
+    </content>
+    <orderEntry type="jdk" jdkName="openjdk-26" jdkType="JavaSDK" />
+    <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="Gradle: com.seedfinding:mc_math:1.171.0" level="project" />
+    <orderEntry type="library" name="Gradle: com.seedfinding:mc_seed:1.171.1" level="project" />
+    <orderEntry type="library" name="Gradle: com.seedfinding:mc_core:1.210.0" level="project" />
+    <orderEntry type="library" name="Gradle: com.seedfinding:mc_noise:1.171.1" level="project" />
+    <orderEntry type="library" name="Gradle: com.seedfinding:mc_biome:1.171.1" level="project" />
+    <orderEntry type="library" name="Gradle: com.seedfinding:mc_terrain:1.171.1" level="project" />
+    <orderEntry type="library" name="Gradle: com.seedfinding:mc_reversal:1.171.1" level="project" />
+    <orderEntry type="library" name="Gradle: com.seedfinding:mc_feature:1.171.10" level="project" />
+    <orderEntry type="library" name="Gradle: com.github.profotoce59:VillageGenerator:main-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="Gradle: net.sf.py4j:py4j:0.10.9.7" level="project" />
+    <orderEntry type="library" name="Gradle: com.github.Xinyuuu7:BastionGenerator:main-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.5.31" level="project" />
+    <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib:1.5.31" level="project" />
+    <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.5.31" level="project" />
+    <orderEntry type="library" name="Gradle: org.jetbrains:annotations:13.0" level="project" />
+    <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib-common:1.5.31" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Gradle: net.lecousin.compression:gzip:0.1.10" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Gradle: net.lecousin.compression:deflate:0.1.10" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Gradle: net.lecousin:core:0.20.0" level="project" />
+  </component>
+</module>

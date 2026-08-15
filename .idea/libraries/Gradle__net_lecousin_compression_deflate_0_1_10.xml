@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="Gradle: net.lecousin.compression:deflate:0.1.10" type="java-imported" external-system-id="GRADLE">
+    <properties groupId="net.lecousin.compression" artifactId="deflate" version="0.1.10" baseVersion="0.1.10" />
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/net.lecousin.compression/deflate/0.1.10/83d5ebe8669fac8a496e052bad2422618310c39e/deflate-0.1.10.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/net.lecousin.compression/deflate/0.1.10/86a213d0519c87170232617561593e025cafaae7/deflate-0.1.10-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

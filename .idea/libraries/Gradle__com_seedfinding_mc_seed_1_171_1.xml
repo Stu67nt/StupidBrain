@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="Gradle: com.seedfinding:mc_seed:1.171.1" type="java-imported" external-system-id="GRADLE">
+    <properties groupId="com.seedfinding" artifactId="mc_seed" version="1.171.1" baseVersion="1.171.1" />
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.seedfinding/mc_seed/1.171.1/949fbbecb02380892430dee0904099706bb9dc39/mc_seed-1.171.1.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.seedfinding/mc_seed/1.171.1/6855948bdd72ae6a28831dcd6c293b8e5b3fc28f/mc_seed-1.171.1-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="Gradle: com.github.profotoce59:VillageGenerator:main-SNAPSHOT" type="java-imported" external-system-id="GRADLE">
+    <properties groupId="com.github.profotoce59" artifactId="VillageGenerator" version="main-SNAPSHOT" baseVersion="main-SNAPSHOT" />
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.github.profotoce59/VillageGenerator/main-SNAPSHOT/8cbf3b66313ae3615e75191729fa152ae905f578/VillageGenerator-main-SNAPSHOT.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.github.profotoce59/VillageGenerator/main-SNAPSHOT/8cbf3b66313ae3615e75191729fa152ae905f578/VillageGenerator-main-SNAPSHOT.jar!/" />
+    </SOURCES>
+  </library>
+</component>
