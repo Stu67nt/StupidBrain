@@ -4,17 +4,10 @@ import sys
 from calc_math import *
 from gui import *
 from seedsearch import *
+from strd_dev_calc import *
 from PySide6.QtGui import QIcon
 from PySide6 import QtWidgets
 from PySide6.QtCore import Slot, QObject, Signal, Qt
-
-def standarise_degrees(mc_ang:float):
-	"""Keeps angles between minecraft's normal -180 - 180 range"""
-	while mc_ang < -180:
-		mc_ang += 360
-	while mc_ang >= 180:
-		mc_ang -= 360
-	return mc_ang
 
 # Classes for sending outputs to GUI thread
 class CalcSignals(QObject):
