@@ -97,19 +97,21 @@ class MainWindow(QtWidgets.QWidget):
 		if self.seed_window is None:
 			self.seed_window = SeedSearcher()
 
+		self.seed_window.setFixedSize(325, 250)
 		self.seed_window.show()
 		self.seed_window.activateWindow()
+
 
 class SeedSearcher(QtWidgets.QWidget):
 	def __init__(self):
 		super().__init__()
 
+		self.process = None
+		self.entry = None
+		self.java_gw = None
 		self.seed_filt = None
+		self.is_searching = False
 		self.threadpool = QThreadPool()
-
-		self.process = subprocess.Popen(["java", "-jar", "seedsearching-1.0-SNAPSHOT-all.jar"])
-		self.java_gw = JavaGateway()
-		self.entry = self.java_gw.entry_point
 
 		self.label = QtWidgets.QLabel(self, text="Select what kind of seed you would like to filter for:")
 		self.label.resize(self.label.sizeHint())
@@ -149,6 +151,8 @@ class SeedSearcher(QtWidgets.QWidget):
 	def closeEvent(self, event):
 		self.java_gw.shutdown()
 		self.process.terminate()
+		self.is_searching = False
+		self.log_view.setPlainText("")
 		event.accept()
 
 	def update(self, event):
@@ -158,10 +162,18 @@ class SeedSearcher(QtWidgets.QWidget):
 			print(self.seed_filt)
 
 	def submit(self):
-		self.log_view.setPlainText(f"Finding {self.seed_filt} seed. This can take a while.")
-		thread = SeedSearch(self.seed_filt, self.entry)
-		thread.signal.results.connect(self.gui_connect)
-		self.threadpool.start(thread)
+		if not self.is_searching:
+			self.is_searching = True
+			self.log_view.setPlainText(f"Finding {self.seed_filt} seed. This can take a while.")
+			self.process = subprocess.Popen(["java", "-jar", "seedsearching-1.0-SNAPSHOT-all.jar"])
+			self.java_gw = JavaGateway()
+			self.entry = self.java_gw.entry_point
+			thread = SeedSearch(self.seed_filt, self.entry)
+			thread.signal.results.connect(self.gui_connect)
+			self.threadpool.start(thread)
 
 	def gui_connect(self, results):
-		self.log_view.setPlainText(str(results[0]).strip())
+		self.is_searching = False
+		self.java_gw.shutdown()
+		self.process.terminate()
+		self.log_view.setPlainText(str(results[random.randint(0, len(results)-1)]).strip())

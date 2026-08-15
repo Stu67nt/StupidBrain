@@ -12,7 +12,6 @@ class SeedSearch(QtCore.QRunnable):
 	def __init__(self, struct, entry):
 		super().__init__()
 		self.java_gw = entry
-		self.is_searching = False
 		self.signal = SearchSignals()
 		self.struct = struct
 		self.start = random.randint(1, 999999999999999)
@@ -20,41 +19,40 @@ class SeedSearch(QtCore.QRunnable):
 
 	@Slot()
 	def run(self):
-		if not self.is_searching:
-			match self.struct:
-				case "Village":
-					results = []
-					while results == []:
-						results = self.search_VIL_seeds(self.java_gw, self.start, self.end)
-						self.start += 100
-						self.end += 100
-				case "Shipwreck":
-					results = []
-					while results == []:
-						results = self.search_SW_seeds(self.java_gw, self.start, self.end)
-						self.start += 100
-						self.end += 100
-				case "Desert Temple":
-					results = []
-					while results == []:
-						results = self.search_DT_seeds(self.java_gw, self.start, self.end)
-						self.start += 100
-						self.end += 100
-				case "Buried Treasure":
-					results = []
-					while results == []:
-						results = self.search_BT_seeds(self.java_gw, self.start, self.end)
-						self.start += 100
-						self.end += 100
-				case "Ruined Portal":
-					results = []
-					while results == []:
-						results = self.search_RP_seeds(self.java_gw, self.start, self.end)
-						self.start += 100
-						self.end += 100
-				case _:
-					results = []
-			self.signal.results.emit(results)
+		match self.struct:
+			case "Village":
+				results = []
+				while results == []:
+					results = self.search_VIL_seeds(self.java_gw, self.start, self.end)
+					self.start += 100
+					self.end += 100
+			case "Shipwreck":
+				results = []
+				while results == []:
+					results = self.search_SW_seeds(self.java_gw, self.start, self.end)
+					self.start += 100
+					self.end += 100
+			case "Desert Temple":
+				results = []
+				while results == []:
+					results = self.search_DT_seeds(self.java_gw, self.start, self.end)
+					self.start += 100
+					self.end += 100
+			case "Buried Treasure":
+				results = []
+				while results == []:
+					results = self.search_BT_seeds(self.java_gw, self.start, self.end)
+					self.start += 100
+					self.end += 100
+			case "Ruined Portal":
+				results = []
+				while results == []:
+					results = self.search_RP_seeds(self.java_gw, self.start, self.end)
+					self.start += 100
+					self.end += 100
+			case _:
+				results = []
+		self.signal.results.emit(results)
 
 
 	@Slot()

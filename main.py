@@ -128,7 +128,7 @@ if __name__ == "__main__":
 
 	app = QtWidgets.QApplication()
 	widget = MainWindow(g_set)
-	widget.setFixedSize(543, 335)
+	widget.setFixedSize(545, 335)
 	widget.setWindowOpacity(0.95)
 	widget.setWindowTitle("StupidBrain Calc")
 	widget.setWindowIcon(QIcon("assets/icon.png"))
