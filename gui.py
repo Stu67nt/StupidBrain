@@ -4,6 +4,7 @@ import sys
 import random
 from PySide6 import QtCore, QtGui, QtWidgets
 from PySide6.QtCore import QThreadPool
+from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import QTableWidget, QTableWidgetItem, QPushButton, QPlainTextEdit, QHeaderView
 from calc_math import nether_coords
 from main import Calc
@@ -16,13 +17,17 @@ class MainWindow(QtWidgets.QWidget):
 	def __init__(self, g_set):
 		super().__init__()
 
+		self.setFixedSize(545, 335)
+		self.setWindowOpacity(0.95)
+		self.setWindowTitle("StupidBrain Calc")
+		self.setWindowIcon(QIcon("assets/icon.png"))
+
 		self.table = QtWidgets.QTableWidget(columnCount=5, rowCount=5)
 		self.table.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers)
 		self.table.setHorizontalHeaderLabels(["Location", "%", "Dist", "Nether", "Angle"])
 		self.table.setShowGrid(False)
 		self.table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
 		self.table.verticalHeader().setSectionResizeMode(QHeaderView.Stretch)
-		#self.table.resizeColumnsToContents()
 
 		self.reset_button = QPushButton("Reset")
 		self.reset_button.clicked.connect(self.reset)
@@ -101,10 +106,15 @@ class MainWindow(QtWidgets.QWidget):
 		self.seed_window.show()
 		self.seed_window.activateWindow()
 
+	def closeEvent(self, event, /):
+		os._exit(0)
 
 class SeedSearcher(QtWidgets.QWidget):
 	def __init__(self):
 		super().__init__()
+
+		self.setWindowTitle("StupidBrain Seed Finder")
+		self.setWindowIcon(QIcon("assets/icon.png"))
 
 		self.process = None
 		self.entry = None
