@@ -80,7 +80,10 @@ class Calc(QtCore.QRunnable):
 		ring = 0
 		self.all_commands_data = []
 		while True:
-			keyboard.wait("f3+c")
+			try:
+				keyboard.wait("f3+c")
+			except:
+				pass
 			time.sleep(0.02)
 			command1 = read_clipboard()
 
@@ -106,8 +109,10 @@ class Calc(QtCore.QRunnable):
 							self.logger.output.emit("Invalid measurement")
 							ring = -1
 					if ring != -1:
+						with open("config.txt") as f:
+							strd_dev = float(f.readline())
 						self.all_commands_data.append([x, y, z, yaw, pitch])
-						self.g_set = find_probablilty((x, z, yaw), self.g_set, STRD_DEV)
+						self.g_set = find_probablilty((x, z, yaw), self.g_set, strd_dev)
 						self.results = extract_best(self.g_set)
 						self.signals.results.emit(self.results, self.all_commands_data[-1], True)
 				elif self.locked_angle and self.results is not None:
@@ -121,7 +126,7 @@ if __name__ == "__main__":
 
 	app = QtWidgets.QApplication()
 	widget = MainWindow(g_set)
-	widget.setWindowFlags(Qt.WindowType.WindowStaysOnTopHint)
+	#widget.setWindowFlags(Qt.WindowType.WindowStaysOnTopHint)
 	widget.show()
 
 	sys.exit(app.exec())

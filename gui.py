@@ -4,11 +4,13 @@ import sys
 import random
 from PySide6 import QtCore, QtGui, QtWidgets
 from PySide6.QtCore import QThreadPool
-from PySide6.QtGui import QIcon
-from PySide6.QtWidgets import QTableWidget, QTableWidgetItem, QPushButton, QPlainTextEdit, QHeaderView
+from PySide6.QtGui import QIcon, QGuiApplication, Qt
+from PySide6.QtWidgets import QTableWidget, QTableWidgetItem, QPushButton, QPlainTextEdit, QHeaderView, QVBoxLayout, \
+	QLineEdit
 from calc_math import nether_coords
 from main import Calc
 from seedsearch import *
+from strd_dev_calc import *
 from copy import deepcopy
 import math
 
@@ -43,9 +45,12 @@ class MainWindow(QtWidgets.QWidget):
 		self.seed_window_button = QPushButton("Seed Filter")
 		self.seed_window_button.clicked.connect(self.open_seed_searcher)
 
+		self.config_window = None
+		self.config_window_button = QPushButton("Config Window")
+		self.config_window_button.clicked.connect(self.open_config)
+
 		self.g_set_orig = deepcopy(g_set)
 		self.g_set_main = g_set
-
 
 		self.layout = QtWidgets.QVBoxLayout(self)
 		self.layout.addWidget(self.table)
@@ -53,6 +58,7 @@ class MainWindow(QtWidgets.QWidget):
 		self.layout.addWidget(self.lock_button)
 		self.layout.addWidget(self.log_view)
 		self.layout.addWidget(self.seed_window_button)
+		self.layout.addWidget(self.config_window_button)
 
 		self.thread = Calc(self.g_set_main)
 		self.thread.signals.results.connect(self.display_best)
@@ -106,6 +112,17 @@ class MainWindow(QtWidgets.QWidget):
 		self.seed_window.show()
 		self.seed_window.activateWindow()
 
+	def open_config(self):
+		if self.config_window is None:
+			self.config_window = StrdDevConfig()
+			self.config_window.destroyed.connect(self.config_window_closed)
+		self.config_window.show()
+		self.config_window.activateWindow()
+
+	@Slot()
+	def config_window_closed(self):
+		self.config_window = None
+
 	def closeEvent(self, event, /):
 		os._exit(0)
 
@@ -127,19 +144,19 @@ class SeedSearcher(QtWidgets.QWidget):
 		self.label.resize(self.label.sizeHint())
 
 		self.rb_vil = QtWidgets.QRadioButton(self, text = "Village")
-		self.rb_vil.toggled.connect(self.update)
+		self.rb_vil.toggled.connect(self.update_filt)
 
 		self.rb_sw = QtWidgets.QRadioButton(self, text = "Shipwreck")
-		self.rb_sw.toggled.connect(self.update)
+		self.rb_sw.toggled.connect(self.update_filt)
 
 		self.rb_dt = QtWidgets.QRadioButton(self, text = "Desert Temple")
-		self.rb_dt.toggled.connect(self.update)
+		self.rb_dt.toggled.connect(self.update_filt)
 
 		self.rb_rp = QtWidgets.QRadioButton(self, text = "Ruined Portal")
-		self.rb_rp.toggled.connect(self.update)
+		self.rb_rp.toggled.connect(self.update_filt)
 
 		self.rb_bt = QtWidgets.QRadioButton(self, text = "Buried Treasure")
-		self.rb_bt.toggled.connect(self.update)
+		self.rb_bt.toggled.connect(self.update_filt)
 
 		self.submit_button = QPushButton("Submit")
 		self.submit_button.clicked.connect(self.submit)
@@ -165,7 +182,7 @@ class SeedSearcher(QtWidgets.QWidget):
 		self.log_view.setPlainText("")
 		event.accept()
 
-	def update(self, event):
+	def update_filt(self, event):
 		self.rb = self.sender()
 		if self.rb.isChecked():
 			self.seed_filt = self.rb.text()
@@ -187,3 +204,65 @@ class SeedSearcher(QtWidgets.QWidget):
 		self.java_gw.shutdown()
 		self.process.terminate()
 		self.log_view.setPlainText(str(results[random.randint(0, len(results)-1)]).strip())
+
+
+class StrdDevConfig(QtWidgets.QWidget):
+	def __init__(self):
+		super().__init__()
+
+		self.threadpool = None
+		self.thread = None
+		self.tp_command = None
+		self.strd_dev_label = None
+		self.strd_dev = 0
+		self.coords = None
+		self.measurements = []
+
+		self.setWindowTitle("StupidBrain Config")
+		self.setWindowIcon(QIcon("assets/icon.png"))
+		self.setWindowFlags(Qt.WindowType.WindowStaysOnTopHint)
+		self.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose)
+
+		self.label = QtWidgets.QLabel(self, text = "Paste in the stronghold tp command:")
+		self.label.resize(self.label.sizeHint())
+
+		self.stronghold_pos_box = QtWidgets.QLineEdit(self, placeholderText="/tp @s 1048 ~ 1480")
+
+		self.submit_button = QPushButton("Submit")
+		self.submit_button.clicked.connect(self.submit)
+
+		self.layout = QVBoxLayout(self)
+		self.layout.addWidget(self.label)
+		self.layout.addWidget(self.stronghold_pos_box)
+		self.layout.addWidget(self.submit_button)
+
+	def submit(self):
+		self.stronghold_pos_box.setReadOnly(True)
+		self.coords = filter_command(self.stronghold_pos_box.text())
+		self.measurements = []
+		self.strd_dev = 0
+		if self.coords is not []:
+			self.strd_dev_label = QtWidgets.QLabel(self, text="" if self.strd_dev == 0 else f"{round(self.strd_dev,4)}")
+			self.strd_dev_label.resize(self.strd_dev_label.sizeHint())
+
+			self.layout.addWidget(self.strd_dev_label)
+			self.thread = StrdDevCalc(self.coords)
+			self.thread.signals.results.connect(self.update_strd_dev)
+			QtCore.QThreadPool.globalInstance().start(self.thread)
+
+	def update_strd_dev(self, strd_dev, tp_command):
+		if strd_dev > 0:
+			with open("config.txt", "w") as f:
+				f.write(f"{strd_dev}")
+				f.close()
+		clipboard = QGuiApplication.clipboard()
+		clipboard.setText(tp_command)
+		self.strd_dev_label.setText(f"{round(strd_dev,4)}")
+
+	def closeEvent(self, event):
+		if self.thread is not None:
+			self.thread.is_running = False
+			"""import keyboard
+			keyboard.send("f3+c")"""
+
+		event.accept()

@@ -20,7 +20,6 @@ import copy
 TODO:
 
 """
-STRD_DEV = 0.0538
 RING_REGIONS = [
 	[1280, 2816, 3],  # Ring 1
 	[4352, 5888, 6],  # Ring 2
@@ -336,6 +335,7 @@ def main_old():
 
 
 def main_probabilistic():
+	STRD_DEV = 0.1
 	g_set = precompute_g_set()
 	count = 0
 	all_commands_data = []
