@@ -7,8 +7,7 @@ from PySide6.QtCore import Slot, QObject, Signal
 
 from calc_math import *
 
-# /tp @s 1048 ~ 1480
-
+# Used for coms between thread and GUI
 class ConfigSignals(QObject):
 	results = Signal(float, str)
 

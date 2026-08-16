@@ -6,7 +6,7 @@ from PySide6 import QtCore, QtGui, QtWidgets
 from PySide6.QtCore import QThreadPool
 from PySide6.QtGui import QIcon, QGuiApplication, Qt
 from PySide6.QtWidgets import QTableWidget, QTableWidgetItem, QPushButton, QPlainTextEdit, QHeaderView, QVBoxLayout, \
-	QLineEdit
+	QLineEdit, QMenu
 from calc_math import nether_coords
 from main import Calc
 from seedsearch import *
@@ -48,6 +48,11 @@ class MainWindow(QtWidgets.QWidget):
 		self.config_window = None
 		self.config_window_button = QPushButton("Config Window")
 		self.config_window_button.clicked.connect(self.open_config)
+
+		self.context_menu = QMenu(self)
+		self.on_top_toggle_menu = self.context_menu.addAction("Window Always on Top")
+
+		self.on_top_toggle_menu.triggered.connect(self.on_top_toggle)
 
 		self.g_set_orig = deepcopy(g_set)
 		self.g_set_main = g_set
@@ -114,8 +119,9 @@ class MainWindow(QtWidgets.QWidget):
 
 	def open_config(self):
 		if self.config_window is None:
-			self.config_window = StrdDevConfig()
+			self.config_window = StrdDevConfig(self.thread)
 			self.config_window.destroyed.connect(self.config_window_closed)
+		self.thread.changing_dev = True
 		self.config_window.show()
 		self.config_window.activateWindow()
 
@@ -125,6 +131,19 @@ class MainWindow(QtWidgets.QWidget):
 
 	def closeEvent(self, event, /):
 		os._exit(0)
+
+	def contextMenuEvent(self, event):
+		# Show the context menu
+		self.context_menu.exec(event.globalPos())
+
+	def on_top_toggle(self):
+		print("balls")
+		flags = self.windowFlags()
+		if Qt.WindowType.WindowStaysOnTopHint in flags:
+			self.setWindowFlag(Qt.WindowType.WindowStaysOnTopHint, False)
+		else:
+			self.setWindowFlag(Qt.WindowType.WindowStaysOnTopHint, True)
+		self.show()
 
 class SeedSearcher(QtWidgets.QWidget):
 	def __init__(self):
@@ -207,9 +226,10 @@ class SeedSearcher(QtWidgets.QWidget):
 
 
 class StrdDevConfig(QtWidgets.QWidget):
-	def __init__(self):
+	def __init__(self, calc):
 		super().__init__()
 
+		self.calc = calc
 		self.threadpool = None
 		self.thread = None
 		self.tp_command = None
@@ -241,7 +261,7 @@ class StrdDevConfig(QtWidgets.QWidget):
 		self.coords = filter_command(self.stronghold_pos_box.text())
 		self.measurements = []
 		self.strd_dev = 0
-		if self.coords is not []:
+		if self.coords is not [] and self.thread is not None:
 			self.strd_dev_label = QtWidgets.QLabel(self, text="" if self.strd_dev == 0 else f"{round(self.strd_dev,4)}")
 			self.strd_dev_label.resize(self.strd_dev_label.sizeHint())
 
@@ -264,5 +284,5 @@ class StrdDevConfig(QtWidgets.QWidget):
 			self.thread.is_running = False
 			"""import keyboard
 			keyboard.send("f3+c")"""
-
+		self.calc.changing_dev = False
 		event.accept()

@@ -25,6 +25,7 @@ class Calc(QtCore.QRunnable):
 		self.g_set = g_set
 		self.locked_angle = False
 		self.results = None
+		self.changing_dev = False
 
 	def ring_overlap(self, sr1: list[int], sr2: list[int]) -> bool:
 		"""
@@ -86,10 +87,10 @@ class Calc(QtCore.QRunnable):
 				pass
 			time.sleep(0.02)
 			command1 = read_clipboard()
-
+			print(self.changing_dev)
 			if command1 != "invalid":
 				x, y, z, yaw, pitch = command1
-				if not self.locked_angle and [x, y, z, yaw, pitch] not in self.all_commands_data:
+				if not self.locked_angle and not self.changing_dev and [x, y, z, yaw, pitch] not in self.all_commands_data:
 					if len(self.all_commands_data) > 0:
 						pos = self.all_commands_data[0]
 
@@ -115,7 +116,7 @@ class Calc(QtCore.QRunnable):
 						self.g_set = find_probablilty((x, z, yaw), self.g_set, strd_dev)
 						self.results = extract_best(self.g_set)
 						self.signals.results.emit(self.results, self.all_commands_data[-1], True)
-				elif self.locked_angle and self.results is not None:
+				elif self.locked_angle and self.results is not None and not self.changing_dev:
 					lock_results = self.lock_angle_calcs(read_clipboard(auto_filter=False))
 					self.signals.results.emit(lock_results, self.all_commands_data[-1], False)
 			else:
