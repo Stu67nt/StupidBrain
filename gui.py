@@ -312,6 +312,7 @@ class StrdDevConfig(QtWidgets.QWidget):
 				f.write(f"{strd_dev}")
 				f.close()
 
+			self.strd_dev_label.setText(f"{strd_dev}")
 			self.confirmation_popup = QtWidgets.QLabel(self, text="Saved!")
 			self.layout.addWidget(self.confirmation_popup)
 			QTimer.singleShot(2000, self.remove_popup)
