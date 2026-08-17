@@ -16,7 +16,7 @@ class StrdDevCalc(QtCore.QRunnable):
 		super().__init__()
 
 		self.signals = ConfigSignals()
-		self.strd_dev = 0
+		self.strd_dev = get_strd_dev()
 		self.coords = stronghold_coords
 		self.all_commands_data = []
 		self.measurements = []
@@ -73,7 +73,7 @@ def tp_position(stronghold_x, stronghold_z):
 
 def calc_strd_dev(stronghold_coords, player_pos_data, measurements):
 	x, z, yaw = player_pos_data
-	strd_dev = 0
+	strd_dev = get_strd_dev()
 	optimal_angle = (math.atan2(-(stronghold_coords[0] - x), stronghold_coords[1] - z))
 	measured_angle = math.radians(standarise_degrees(yaw))
 	angle_diff = measured_angle - optimal_angle

@@ -3,11 +3,11 @@ import subprocess
 import sys
 import random
 from PySide6 import QtCore, QtGui, QtWidgets
-from PySide6.QtCore import QThreadPool
+from PySide6.QtCore import QThreadPool, QTimer
 from PySide6.QtGui import QIcon, QGuiApplication, Qt
 from PySide6.QtWidgets import QTableWidget, QTableWidgetItem, QPushButton, QPlainTextEdit, QHeaderView, QVBoxLayout, \
 	QLineEdit, QMenu
-from calc_math import nether_coords
+from calc_math import nether_coords, get_strd_dev
 from main import Calc
 from seedsearch import *
 from strd_dev_calc import *
@@ -50,7 +50,7 @@ class MainWindow(QtWidgets.QWidget):
 		self.config_window_button.clicked.connect(self.open_config)
 
 		self.context_menu = QMenu(self)
-		self.on_top_toggle_menu = self.context_menu.addAction("Window Always on Top")
+		self.on_top_toggle_menu = self.context_menu.addAction("Toggle Window on Top")
 
 		self.on_top_toggle_menu.triggered.connect(self.on_top_toggle)
 
@@ -229,12 +229,12 @@ class StrdDevConfig(QtWidgets.QWidget):
 	def __init__(self, calc):
 		super().__init__()
 
+		self.strd_dev_label = None
+		self.thread = None
 		self.calc = calc
 		self.threadpool = None
-		self.thread = None
 		self.tp_command = None
-		self.strd_dev_label = None
-		self.strd_dev = 0
+		self.strd_dev = 0.1
 		self.coords = None
 		self.measurements = []
 
@@ -257,32 +257,71 @@ class StrdDevConfig(QtWidgets.QWidget):
 		self.layout.addWidget(self.submit_button)
 
 	def submit(self):
-		self.stronghold_pos_box.setReadOnly(True)
 		self.coords = filter_command(self.stronghold_pos_box.text())
 		self.measurements = []
-		self.strd_dev = 0
-		if self.coords is not [] and self.thread is not None:
-			self.strd_dev_label = QtWidgets.QLabel(self, text="" if self.strd_dev == 0 else f"{round(self.strd_dev,4)}")
+		self.strd_dev = get_strd_dev()
+		print(self.coords)
+		if self.coords != [] and self.thread is None:
+			self.stronghold_pos_box.setReadOnly(True)
+			print("Detected")
+			self.srtd_dev_hint_label = QtWidgets.QLabel(self, text = "The current standard deviation configured is: ")
+
+			self.strd_dev_label = QtWidgets.QLabel(self, text=f"{round(self.strd_dev,4)}")
 			self.strd_dev_label.resize(self.strd_dev_label.sizeHint())
 
+			self.manual_set_hint_label = QtWidgets.QLabel(self, text="Enter your value in the text box if you already know it: ")
+
+			self.manual_strd_dev_input = QtWidgets.QLineEdit(self, placeholderText="0.1")
+
+			self.strd_dev_submit_button = QPushButton("Submit")
+			self.strd_dev_submit_button.clicked.connect(self.save_strd_dev)
+
+			self.layout.removeWidget(self.label)
+			self.layout.removeWidget(self.stronghold_pos_box)
+			self.layout.removeWidget(self.submit_button)
+			self.label.deleteLater()
+			self.stronghold_pos_box.deleteLater()
+			self.submit_button.deleteLater()
+
+			self.layout.addWidget(self.srtd_dev_hint_label)
 			self.layout.addWidget(self.strd_dev_label)
+			self.layout.addWidget(self.manual_set_hint_label)
+			self.layout.addWidget(self.manual_strd_dev_input)
+			self.layout.addWidget(self.strd_dev_submit_button)
+
 			self.thread = StrdDevCalc(self.coords)
 			self.thread.signals.results.connect(self.update_strd_dev)
 			QtCore.QThreadPool.globalInstance().start(self.thread)
 
 	def update_strd_dev(self, strd_dev, tp_command):
-		if strd_dev > 0:
-			with open("config.txt", "w") as f:
-				f.write(f"{strd_dev}")
-				f.close()
 		clipboard = QGuiApplication.clipboard()
 		clipboard.setText(tp_command)
 		self.strd_dev_label.setText(f"{round(strd_dev,4)}")
 
+	def save_strd_dev(self):
+		try:
+			strd_dev = float(self.manual_strd_dev_input.text())
+		except ValueError:
+			if self.strd_dev_label is not None:
+				strd_dev = float(self.strd_dev_label.text())
+			else:
+				strd_dev = get_strd_dev()
+
+		if strd_dev > 0:
+			with open("config.txt", "w") as f:
+				f.write(f"{strd_dev}")
+				f.close()
+
+			self.confirmation_popup = QtWidgets.QLabel(self, text="Saved!")
+			self.layout.addWidget(self.confirmation_popup)
+			QTimer.singleShot(2000, self.remove_popup)
+
+	def remove_popup(self):
+		self.layout.removeWidget(self.confirmation_popup)
+		self.confirmation_popup.deleteLater()
+
 	def closeEvent(self, event):
 		if self.thread is not None:
 			self.thread.is_running = False
-			"""import keyboard
-			keyboard.send("f3+c")"""
 		self.calc.changing_dev = False
 		event.accept()

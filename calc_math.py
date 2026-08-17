@@ -31,6 +31,14 @@ RING_REGIONS = [
 	[22784, 24320, 9]  # Ring 8
 				]
 
+def get_strd_dev():
+	try:
+		with open("config.txt") as f:
+			strd_dev = float(f.readline())
+	except:
+		strd_dev = 0.1
+	return strd_dev
+
 def surrounding_rings(player_displacement: float | int) -> list[int]:
 	"""
 	Idenifies the rings which should be focused on when calculating stronghold position

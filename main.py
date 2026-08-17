@@ -110,8 +110,7 @@ class Calc(QtCore.QRunnable):
 							self.logger.output.emit("Invalid measurement")
 							ring = -1
 					if ring != -1:
-						with open("config.txt") as f:
-							strd_dev = float(f.readline())
+						strd_dev = get_strd_dev()
 						self.all_commands_data.append([x, y, z, yaw, pitch])
 						self.g_set = find_probablilty((x, z, yaw), self.g_set, strd_dev)
 						self.results = extract_best(self.g_set)
