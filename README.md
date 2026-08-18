@@ -34,7 +34,7 @@ I also added a FSG filter for 1.16.1 becuase I thought it would be fun thing to 
 
 ---
 
-## Prerequisites <a name="Prerequisites"></a>
+## Prerequisites <a id="Prerequisites" name="Prerequisites"></a>
 
 ---
 
@@ -49,20 +49,20 @@ Note that to use this program you will need the following:
 
 ---
 
-## Usage Guide <a name="CalcUsageGuide"></a>
+## Usage Guide <a id="CalcUsageGuide" name="CalcUsageGuide"></a>
 
 I have prepared a video as shown below to showcase how to use this calculator properly in order to set it up so you can begin measuring eyes. 
 
 [WILL BE ADDED LATER]
 
-### Setting the Standard Deviation <a name="SettingStrdDev"></a>
+### Setting the Standard Deviation <a id="SettingStrdDev" name="SettingStrdDev"></a>
 
 You will first need to configure a standard deviation. This will be how accurate your measurements are to the actual angle the eye is pointing. This is a value you will give in degrees. 
 
 1. To configure this click on "Config Window".  
 At this point if you know your Standard Deviation value (such as from Ningabrain Bot) skip the section 2 instrctuons and follow the section 3 ones. If you do not know this value follow the section 3 instuctions.   
 
-#### If you don't know the value <a name="ValueUnknown"></a>
+#### If you don't know the value <a id="ValueUnknown" name="ValueUnknown"></a>
 
 2.1) Load up a new creative regiular terrain world in Minecraft, give yourself an Eye of Ender and fly up to the sky so you don't deal with obstrcutions. Then run the following command:  
 
@@ -75,7 +75,7 @@ To measure the eye, I reccomend you lower FOV to 30 and your sensitivity to 0/\*
 
 2.4) Once this is done open the chat and press CRTL and V then press enter. This should teleport you roughly 200 blocks away from the stronghold. Repeat step 4 and 5 until the standard deviation value has settled. Then click "Submit" and close the window. The value has now been setup and you can jump ahead to the next heading part.
 
-#### If you know the value <a name="ValueKnown"></a>
+#### If you know the value <a id="ValueUnknown" name="ValueKnown"></a>
 
 3.1) The program will ask for some tp coordinates. You should be able to just enter the following instead anc click "Submit".  
 
@@ -83,7 +83,7 @@ To measure the eye, I reccomend you lower FOV to 30 and your sensitivity to 0/\*
 
 3.2) Enter your 1.13+ standard deviation value and click "Submit". and close the window. The value has now been setup and you can jump ahead to the next heading part.
 
-### How to use the calculator <a name="CalcUse"></a>
+### How to use the calculator <a id="CalcUse" name="CalcUse"></a>
 
 1. Throw an eye of ender which will point in the direction of the stronghold.
 2. Look and measure the direction of the angle as described earlier. 
@@ -93,7 +93,7 @@ To measure the eye, I reccomend you lower FOV to 30 and your sensitivity to 0/\*
 6. Once you have a measurement you are confident in you can lock the measurement with the lock button. Now when you F3+C it will instead tell you the updated distance and angle of travel between you and each predicted stronghold location. You can press "Unlock" (THe lock button text will change to unlock) to measure as normal. 
 7. If you want to find the location of a different stronghold click reset to clear the previous data and use as normal.
 
-### Extra tips <a name="CalcExtraTips"></a>
+### Extra tips <a id="CalcExtraTips" name="CalcExtraTips"></a>
 
  - If you see that you have a lot of top candidates with very close coordiates but low-mid certainty (like 15% ish) then it is likely safe to send the location of the top candiate as it is likely due to very slight measurement error. 
  - Pressing F3+ESC allows you to pause the game without opening the pause menu. You can use this to pause buffer your mouse movements for more precise measurements.
@@ -101,20 +101,20 @@ To measure the eye, I reccomend you lower FOV to 30 and your sensitivity to 0/\*
  - On OBS you can create a new source for your Minecraft window which you can then use to create a scene which shows a more zoomed in version of your crosshair to be able to better line up the eye. I will not explain how to set this up but you could probably figure it out yourself or find a YouTube video on it. 
 
 ---
-## How does this work <a name="BotExplanation"></a>
+## How does this work <a id="BotExplanation" name="BotExplanation"></a>
 
 If you want a good explanation without going over the exact math behind this calculator I highly reccomend checking out [this video](https://www.youtube.com/watch?v=jZ8fh-LJB88) by Heppe as well as [this video](https://www.youtube.com/watch?v=rglAku0nrKM&t=355s) by DIMM4; both of which significantly helped me as well in understand what the idea and logic behind the bot was.
 
-### An Overview of the Logic <a name="LogicOverview"></a>
+### An Overview of the Logic <a id="LogicOverview" name="LogicOverview"></a>
 
 If you are too lazy to watch those videos and just want me to explain it read this section.  
 
-#### The Stupid Method <a name="StupidMethod"></a>
+#### The Stupid Method <a id="StupidMethod" name="StupidMethod"></a>
 In Minecraft you have an Eye of Ender. What this item does is point to the closest stronghold in the world from your current position. If you are playing casually you would look at the direction the eye is going and then walk in that direction until you felt you went far enough then throw another eye. This method is horrible and ineffienct. It gives you no sense of distance you need to travel and you can easily overshoot the stronghold (The circles are the eyes of ender).  
 ![badmethod.png](RMassets/badmethod.png)
 So let's improve this.  
 
-#### The Mediocre Method <a name="MediocreMethod"></a>
+#### The Mediocre Method <a id="MediocreMethod" name="MediocreMethod"></a>
 Now what if instead we upgraded to throwing 2 eyes. What we could do is measure the angle the eye is pointing at 2 different positions and note down the angle the eye was pointing in as well as the X and Z coordinates of each place we measured. This would allow us to form 2 lines and intersect them. We can then apply basic triginometry to be able to tell where the lines are intersecting.
 
 ![betterbutstillbadmethod.png](RMassets/betterbutstillbadmethod.png)
@@ -126,7 +126,7 @@ This should be where the stronghold is right? Theoretically, yes. But in reality
 
 So let's improve this.
 
-#### The Pro Method <a name="ProMethod"></a>
+#### The Pro Method <a id="ProMethod" name="ProMethod"></a>
 So after all that waffle here is what this method does different. It has 2 different parts which combine together to create the full bot. 
 
 The first part is where we create a set of every possible coordinate where the stronghold could be pointing to. You may think that this is near infinte however we can do quite a few things to eliminate this. Down to something more reasonable. Firstly strongholds can only spawn in the set reigons shown in the image below.
@@ -144,7 +144,7 @@ Then we have the final part where we compare each candidate with a reasonable ch
 
 Then we can combine all this together to create a list of probable candidates where the stronghold could be. 
 
-### The Math behind it <a name="FancyMath"></a>
+### The Math behind it <a id="FancyMath" name="FancyMath"></a>
 
 The paper starts off by algebraically defining the locations of a stronghold within a ring (let's call this ring k).  
 ![strongholdinitplacement.png](RMassets/strongholdinitplacementfull.png)
@@ -193,7 +193,7 @@ This is only accounted for when we are trying to find a closer stronghold in the
 
 ---
 
-## Usage Guide <a name="SeedUsageGuide"></a>
+## Usage Guide <a id="SeedUsageGuide" name="SeedUsageGuide"></a>
 
 If you want a video tutorial on how to use it, check out the same tutorial video as before. There will be a video demostration of how to use that part there. If you want a text walkthrough. Keep reading onwards. 
 
@@ -207,14 +207,14 @@ If you want a video tutorial on how to use it, check out the same tutorial video
    4. In the text box paste in the generated seed
    5. Select "Create New World"
 
-## Important Notes and Tips <a name="SeedExtraTips"></a>
+## Important Notes and Tips <a id="SeedExtraTips" name="SeedExtraTips"></a>
  - The filters for Ruined Portal and Shipwreck are quite slow. So if you just want to test the seed filter do not filter for these filter for Desert Temple or Buried Treasure as these filter quickly.
  - All found structures will spawn in the positive, positive quadrant of the world. (For example if your coordinates are (20, 70, 10) then that would be the positive, positive quadrant whilst (-20, 70, 10) would be negative positive quadrant.)
  - For ruined portals they are NOT guaranteed to spawn above ground. So if you filter for one and do not see it then it likely spawned underground. There was no way for me to try filter these out, unfortunately.
  - The seed filter does not guarantee a way to enter the nether quickly such as obsidian or a lava pool. 
  - A bastion is guaranteed within 8 chunks of spawn. It will also always be in the positive, positive quadrant.
 
-## Seed Filter Conditions <a name="SeedFilterCons"></a>
+## Seed Filter Conditions <a id="SeedFilterCons" name="SeedFilterCons"></a>
 
 Below is the requriements for each seed type to be allowed.
 
@@ -225,33 +225,33 @@ All intended structures will generate in the Positive, Positive quadrant. Furthe
 
 ---
 
-#### Village <a name="Village"></a>
+#### Village <a id="Village" name="Village"></a>
 
  - At most 7 Chunks from spawn
  - Contains 1 or more blacksmiths
  - One of the chests in the village contain at least 4 iron or 1 iron and 3 diamonds. (You kill golem for the other 3 iron needed) 
 
-#### Desert Temple <a name="DesertTemple"></a>
+#### Desert Temple <a id="DesertTemple" name="DesertTemple"></a>
 
  - At most 5 Chunks from spawn
  - Contains at least 7 iron or 4 iron and 3 diamonds.
 
-#### Buried Treasure <a name="BuriedTreasure"></a>
+#### Buried Treasure <a id="BuriedTreasure" name="BuriedTreasure"></a>
 
  - At most 5 Chunks from spawn
  - Contains at least 7 iron or 4 iron and 3 diamonds.
 
-#### Shipwreck <a name="Shipwreck"></a>
+#### Shipwreck <a id="Shipwreck" name="Shipwreck"></a>
 
  - At most 6 Chunks from spawn
  - Contains at least 7 iron or 4 iron and 3 diamonds.
 
-#### Ruined Portal <a name="RuinedPortal"></a>
+#### Ruined Portal <a id="RuinedPortal" name="RuinedPortal"></a>
 
  - At most 6 Chunks from spawn
  - Guarantees 1 Fire Charge and 27 Iron Nuggets
 
-#### Bastion <a name="Bastion"></a>
+#### Bastion <a id="Bastion" name="Bastion"></a>
 
  - At most 12 chunks from 0, 0
  - Can be any bastion type
