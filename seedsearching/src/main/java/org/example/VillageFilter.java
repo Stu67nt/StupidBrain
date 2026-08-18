@@ -23,7 +23,7 @@ import java.util.List;
 
 public class VillageFilter {
     private List<Long> seeds = new java.util.ArrayList<>();
-    private final int CHUNK_DIST = 6;
+    private final int CHUNK_DIST = 7;
     private final MCVersion version = MCVersion.v1_16_1;
     private final ChunkRand rand = new ChunkRand();
     private final Village vil = new Village(version);

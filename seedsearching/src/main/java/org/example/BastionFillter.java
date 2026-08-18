@@ -15,7 +15,7 @@ import java.util.List;
 public class BastionFillter {
     private List<Long> inputSeeds;
     private List<Long> outputSeeds;
-    private final int CHUNK_DIST = 8;
+    private final int CHUNK_DIST = 12;
     private final MCVersion version = MCVersion.v1_16_1;
 
 
