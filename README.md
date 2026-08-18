@@ -2,6 +2,8 @@
 
 A Minecraft stronghold calculator which utilises a bayesian statistics method of calculating the position of the stronghold. This approach implements the methods layed out in [this document](RMassets/triangulation.pdf) made by the very smart and cool NingaBrain. This entire bot is my attempt at recreating [his bot](https://github.com/Ninjabrain1/Ninjabrain-Bot) myself out of curiosity.
 
+
+
 ---
 
 ## Usage guide
@@ -10,11 +12,50 @@ I have prepared a video as shown below to showcase how to use this calculator pr
 
 [WILL BE ADDED LATER]
 
-You will first need to configure a standard deviation. This will be how accurate your measurements are to the actual angle the eye is pointing. This is a value you will give in degrees. A good starting off value if you are casually playing is 0.1 as it will require you to measure somewhat accurately but is fairly lenient. And should give you a decent prediction.
+### Setting the Standard Deviation
+
+You will first need to configure a standard deviation. This will be how accurate your measurements are to the actual angle the eye is pointing. This is a value you will give in degrees. 
+
+1. To configure this click on "Config Window".  
+At this point if you know your Standard Deviation value (such as from Ningabrain Bot) skip the section 2 instrctuons and follow the section 3 ones. If you do not know this value follow the section 3 instuctions.   
+
+#### If you don't know the value
+
+2.1) Load up a new creative regiular terrain world in Minecraft, give yourself an Eye of Ender and fly up to the sky so you don't deal with obstrcutions. Then run the following command:  
+
+    /locate stronghold 
+
+2.2) Click on the green highlighted coordinates then copy them into the text box and click "Submit".  
+2.3) Measure the eye by looking at it as accurately as you would normally in a speedrun and press F3 and C at the same time.  
 
 To measure the eye, I reccomend you lower FOV to 30 and your sensitivity to 0/\*yawn* one your crosshair is on the eye for better measurement. As you can see below you want the right edge of your crosshair to align with the left side of the centre pixel of the eye. This is the optimal measurement. If you are unable to get this accurate, it is OK, but a better accuracy will lead to much more accurate measurements. ![img.png](RMassets/eyealign.png)
 
-Once aligned press the combination of "F3" + "C" with the game unpaused. This will copy position data about your minecraft player which the program will then read and update its prediction. 
+2.4) Once this is done open the chat and press CRTL and V then press enter. This should teleport you roughly 200 blocks away from the stronghold. Repeat step 4 and 5 until the standard deviation value has settled. Then click "Submit" and close the window. The value has now been setup and you can jump ahead to the next heading part.
+
+#### If you know the value
+
+3.1) The program will ask for some tp coordinates. You should be able to just enter the following instead anc click "Submit".  
+
+    /tp @s 0 ~ 0
+
+3.2) Enter your 1.13+ standard deviation value and click "Submit". and close the window. The value has now been setup and you can jump ahead to the next heading part.
+
+### How to use the calculator
+
+1. Throw an eye of ender which will point in the direction of the stronghold.
+2. Look and measure the direction of the angle as described earlier. 
+3. Once you have got a good angle alignment press F3 and C to copy your player position.
+4. Check the calculator to see the top 5 results. Each result will have a confidence level describing how likely it is to be the correct position. This will be under the % tab.
+5. If the number is not decently confident (like 60+%) then you can move some distance away (like 100 or so blocks but depends on your coordinates) and repeat the steps above.
+6. Once you have a measurement you are confident in you can lock the measurement with the lock button. Now when you F3+C it will instead tell you the updated distance and angle of travel between you and each predicted stronghold location. You can press "Unlock" (THe lock button text will change to unlock) to measure as normal. 
+7. If you want to find the location of a different stronghold click reset to clear the previous data and use as normal.
+
+### Extra tips
+
+ - If you see that you have a lot of top candidates with very close coordiates but low-mid certainty (like 15% ish) then it is likely safe to send the location of the top candiate as it is likely due to very slight measurement error. 
+ - Pressing F3+ESC allows you to pause the game without opening the pause menu. You can use this to pause buffer your mouse movements for more precise measurements.
+ - Right Clicking inside the window of the calculator allows you to toggle the window staying on top at all times.
+ - On OBS you can create a new source for your Minecraft window which you can then use to create a scene which shows a more zoomed in version of your crosshair to be able to better line up the eye.
 
 ---
 ## How does this work
@@ -51,10 +92,12 @@ The first part is where we create a set of every possible coordinate where the s
 Secondly, each stronghold must start generating at the 8, 8 coordinate in a chunk (a chunk is 16x16 blocks large). With this we can create a large but managable list of every possible coordinate a stronghold can point to. A bit like this.
 ![img.png](RMassets/setofcoords.png)
 
-Now we have this large set we can measure angle the eye is pointing as well as where the player is standing. With this info we can calculate what are the chances these coordinates were the actual ones the eye of ender was pointing to. This diagram below shows a cone/triangleish shape which is a range of possible angles your eye of ender could be pointing to. 
+Now we have this large set, we can measure angle the eye is pointing, as well as where the player is standing. With this info, we can calculate; what are the chances these coordinates were the actual ones the eye of ender was pointing to. This diagram below shows a cone/triangleish shape which is a range of possible angles your eye of ender could be pointing to. 
 ![img.png](RMassets/coneangle.png)
 
-Now why are we forming this shape? Well that is because of the main issue which the previous method did not address. Inaccuracy with measurements. We can resolve this by normally distributing the measured angle with a standard deviation being the angle in degrees that the player's measurements vary by. What this essentially means is that we are 
+Now why are we forming this shape? Well that is because of the main issue which the previous method did not address. Inaccuracy with measurements. We can resolve this by normally distributing the measured angle with a standard deviation being the angle in degrees that the player's measurements vary by. What this essentially means is that we are deciding how much to trust the player's measurement.
+
+Then we have the final part where we compare each candidate with a reasonable chance to be selected against each other and see what is the chance that this one is actually the one the eye ment to point at.  
 
 Then we can combine all this together to create a list of probable candidates where the stronghold could be. 
 
