@@ -6,35 +6,35 @@ I also added a FSG filter for 1.16.1 becuase I thought it would be fun thing to 
 
 ## Table of Contents
 
-[Prerequisites](##Prerequisites)
+[Prerequisites](#Prerequisites)
 
 ### Stronghold Calculator
-1. [Usage Guide](##CalcUsageGuide)
-   1. [Setting the Standard Deviation](###SettingStrdDev)
-      1. [If you don't know the value](####ValueUnknown)
-      2. [If you know the value](####ValueKnown)
-   2. [How to use the calculator](###CalcUse)
-   3. [Extra Tips](###CalcExtraTips)
-2. [How it works](##BotExplanation)
-   1. [An Overview of the Logic](###LogicOverview)
-      1. [The Stupid Method](####StupidMethod)
-      2. [The Mediocre Method](####MediocreMethod)
-      3. [The Pro Method](####ProMethod)
-   2. [The Math Behind It](###FancyMath)
+1. [Usage Guide](#CalcUsageGuide)
+   1. [Setting the Standard Deviation](#SettingStrdDev)
+      1. [If you don't know the value](#ValueUnknown)
+      2. [If you know the value](#ValueKnown)
+   2. [How to use the calculator](#CalcUse)
+   3. [Extra Tips](#CalcExtraTips)
+2. [How it works](#BotExplanation)
+   1. [An Overview of the Logic](#LogicOverview)
+      1. [The Stupid Method](#StupidMethod)
+      2. [The Mediocre Method](#MediocreMethod)
+      3. [The Pro Method](#ProMethod)
+   2. [The Math Behind It](#FancyMath)
 
 ### Seed Finder
-1. [Usage Guide](##SeedUsageGuide)
-2. [Important Notes and Tips](##SeedExtraTips)
-3. [Seed Filter Conditions](##SeedFilterCons)
-   1. [Village](####Village)
-   2. [Desert Temple](####DesertTemple)
-   3. [Buried Treasure](####BuriedTreasure)
-   4. [Shipwreck](####Shipwreck)
-   5. [Ruined Portal](####RuinedPortal)
+1. [Usage Guide](#SeedUsageGuide)
+2. [Important Notes and Tips](#SeedExtraTips)
+3. [Seed Filter Conditions](#SeedFilterCons)
+   1. [Village](#Village)
+   2. [Desert Temple](#DesertTemple)
+   3. [Buried Treasure](#BuriedTreasure)
+   4. [Shipwreck](#Shipwreck)
+   5. [Ruined Portal](#RuinedPortal)
 
 ---
 
-## Prerequisites
+## Prerequisites <a name="Prerequisites"></a>
 
 ---
 
