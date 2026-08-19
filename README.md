@@ -7,6 +7,9 @@ I also added a FSG filter for 1.16.1 because I thought it would be a fun thing t
 ## Table of Contents
 
 [Prerequisites](#Prerequisites)
+[Download Instructions](#DownloadInstructions)
+[Features](#Features)
+
 
 ### Stronghold Calculator
 1. [Usage Guide](#CalcUsageGuide)
@@ -43,13 +46,13 @@ Note that to use this program, you will need the following:
  - The program itself
  - OBS is sometimes helpful but not needed
 
-### How to Download
+### How to Download <a id="Download Instructions" name="DownloadInstructions"></a>
 To download, click on the GitHub Release and download the main.zip.  
 Then you need to extract the zip, open the folder, and run main.exe.
 
 ---
 
-## Features  
+## Features <a id="Features" name="Features"></a>
  - Calculate the position of the nearest stronghold with one eye measurement
  - Allows for many measurements for even better accuracy
  - Measurement locking so you can stay on track to the stronghold
