@@ -1,5 +1,4 @@
 import math
-import subprocess
 import sys
 from calc_math import *
 from gui import *

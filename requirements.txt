@@ -1,0 +1,6 @@
+numpy
+py4j
+scipy
+PySide6
+pyperclip
+keyboard
