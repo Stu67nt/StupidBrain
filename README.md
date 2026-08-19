@@ -6,9 +6,9 @@ I also added a FSG filter for 1.16.1 because I thought it would be a fun thing t
 
 ## Table of Contents
 
-[Prerequisites](#Prerequisites)
-[Download Instructions](#DownloadInstructions)
-[Features](#Features)
+[Prerequisites](#Prerequisites)  
+[Download Instructions](#DownloadInstructions)  
+[Features](#Features)  
 
 
 ### Stronghold Calculator
@@ -42,6 +42,7 @@ I also added a FSG filter for 1.16.1 because I thought it would be a fun thing t
 
 Note that to use this program, you will need the following: 
 
+ - Windows 11 device
  - Minecraft Java Edition 1.16.1
  - The program itself
  - OBS is sometimes helpful but not needed
@@ -50,6 +51,13 @@ Note that to use this program, you will need the following:
 To download, click on the GitHub Release and download the main.zip.  
 Then you need to extract the zip, open the folder, and run main.exe.
 
+If you want to build from source, do the following:
+
+   git clone https://github.com/Stu67nt/StupidBrain
+   cd StupidBrain
+   pip install -r requirements.txt
+   python main.py
+   
 ---
 
 ## Features <a id="Features" name="Features"></a>
