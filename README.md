@@ -53,10 +53,10 @@ Then you need to extract the zip, open the folder, and run main.exe.
 
 If you want to build from source, do the following:
 
-   git clone https://github.com/Stu67nt/StupidBrain
-   cd StupidBrain
-   pip install -r requirements.txt
-   python main.py
+    git clone https://github.com/Stu67nt/StupidBrain
+    cd StupidBrain
+    pip install -r requirements.txt
+    python main.py
    
 ---
 
