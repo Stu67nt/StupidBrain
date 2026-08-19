@@ -39,10 +39,15 @@ I also added a FSG filter for 1.16.1 becuase I thought it would be fun thing to 
 
 ---
 
-Note that to use this program you will need the following: 
+Note that to use this program, you will need the following: 
 
  - Minecraft Java Edition 1.16.1
  - The program itself
+ - OBS is sometimes helpful but not needed
+
+### How to Download
+To download, click on the GitHub Release and download the main.zip.  
+Then you need to extract the zip, open the folder, and run main.exe.
 
 ---
 
@@ -54,7 +59,7 @@ Note that to use this program you will need the following:
 
 I have prepared a video as shown below to showcase how to use this calculator properly in order to set it up so you can begin measuring eyes. 
 
-[WILL BE ADDED LATER]
+[![Click for the video](https://img.youtube.com/vi/bjHQqKF0b-Y/0.jpg)](https://www.youtube.com/watch?v=bjHQqKF0b-Y)
 
 ### Setting the Standard Deviation <a id="SettingStrdDev" name="SettingStrdDev"></a>
 
