@@ -58,7 +58,7 @@ Then you need to extract the zip, open the folder, and run main.exe.
 
 I have prepared a video as shown below to showcase how to use this calculator properly in order to set it up so you can begin measuring eyes. 
 
-[WILL BE ADDED LATER]
+[![Click for the video](https://img.youtube.com/vi/bjHQqKF0b-Y/0.jpg)](https://www.youtube.com/watch?v=bjHQqKF0b-Y)
 
 ### Setting the Standard Deviation <a id="SettingStrdDev" name="SettingStrdDev"></a>
 
