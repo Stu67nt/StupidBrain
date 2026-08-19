@@ -59,8 +59,6 @@ Then you need to extract the zip, open the folder, and run main.exe.
 
 ## Stronghold Calculator
 
----
-
 ## Usage Guide <a id="CalcUsageGuide" name="CalcUsageGuide"></a>
 
 I have prepared a video as shown below to showcase how to use this calculator properly in order to set it up so you can begin measuring eyes. 
@@ -202,8 +200,6 @@ This is only accounted for when we are trying to find a closer stronghold in the
 ---
 
 ## Seed Finder
-
----
 
 ## Usage Guide <a id="SeedUsageGuide" name="SeedUsageGuide"></a>
 
