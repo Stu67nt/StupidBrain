@@ -37,8 +37,6 @@ I also added a FSG filter for 1.16.1 becuase I thought it would be fun thing to 
 
 ## Prerequisites <a id="Prerequisites" name="Prerequisites"></a>
 
----
-
 Note that to use this program, you will need the following: 
 
  - Minecraft Java Edition 1.16.1
@@ -48,6 +46,14 @@ Note that to use this program, you will need the following:
 ### How to Download
 To download, click on the GitHub Release and download the main.zip.  
 Then you need to extract the zip, open the folder, and run main.exe.
+
+---
+
+## Features  
+ - Calculate the position of the nearest stronghold with one eye measurement
+ - Allows for many measurements for even better accuracy
+ - Measurement Locking so you can stay on track to the stronghold
+ - 1.16.1 seed filter so you can find good speed running seeds. 
 
 ---
 
