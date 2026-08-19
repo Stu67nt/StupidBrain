@@ -80,7 +80,9 @@ I have prepared a video, shown below, to showcase how to use this calculator pro
 
 You will first need to configure a standard deviation. This will be how accurate your measurements are to the actual angle the eye is pointing. This is a value you will give in degrees. 
 
-1. To configure this, click on "Config Window".  
+1. To configure this, click on "Config Window".
+<img width="727" height="447" alt="image" src="https://github.com/user-attachments/assets/6ee48a2b-2b2a-4018-946d-f4ad8a6ab1c4" />
+ 
 At this point, if you know your Standard Deviation value (such as from Ningabrain Bot), skip the section 2 instructions and follow the section 3 ones. If you do not know this value, follow the section 3 instructions.   
 
 #### If you don't know the value <a id="ValueUnknown" name="ValueUnknown"></a>
@@ -89,10 +91,12 @@ At this point, if you know your Standard Deviation value (such as from Ningabrai
 
     /locate stronghold 
 
-2.2) Click on the green highlighted coordinates then copy them into the text box and click "Submit".  
-2.3) Measure the eye by looking at it as accurately as you would normally in a speedrun and press F3 and C at the same time.  
+2.2) Click on the green highlighted coordinates, then copy them into the text box and click "Submit".  
+<img width="265" height="159" alt="image" src="https://github.com/user-attachments/assets/dc2abdb1-c0ae-4471-b6dc-9ad9705ae0fb" />
 
-To measure the eye, I recommend you lower FOV to 30 and your sensitivity to 0/\*yawn* once your crosshair is on the eye for better measurement. As you can see below, you want the right edge of your crosshair to align with the left side of the centre pixel of the eye. This is the optimal measurement. If you are unable to get this accurate, it is OK, but better accuracy will lead to much more accurate measurements. ![img.png](RMassets/eyealign.png)
+2.3) Measure the eye by looking at it as accurately as you would normally in a speedrun, and press F3 and C at the same time.  
+
+To measure the eye, I recommend you lower FOV to 30 and your sensitivity to 0/\*yawn* once your crosshair is on the eye for better measurement. As you can see below, you want the right edge of your crosshair to align with the left side of the centre pixel of the eye. This is the optimal measurement. If you are unable to get this accurately, it is OK, but better accuracy will lead to much more accurate measurements. ![img.png](RMassets/eyealign.png)
 
 2.4) Once this is done, open the chat and press CRTL and V, then press Enter. This should teleport you roughly 200 blocks away from the stronghold. Repeat steps 4 and 5 until the standard deviation value has settled. Then click "Submit" and close the window. The value has now been setup and you can jump ahead to the next heading part.
 
@@ -102,6 +106,8 @@ To measure the eye, I recommend you lower FOV to 30 and your sensitivity to 0/\*
 
     /tp @s 0 ~ 0
 
+<img width="263" height="152" alt="image" src="https://github.com/user-attachments/assets/3b9e2d9b-8dbb-4d66-bc59-a35102806cec" />
+
 3.2) Enter your 1.13+ standard deviation value and click "Submit". and close the window. The value has now been setup and you can jump ahead to the next heading part.
 
 ### How to use the calculator <a id="CalcUse" name="CalcUse"></a>
@@ -110,8 +116,14 @@ To measure the eye, I recommend you lower FOV to 30 and your sensitivity to 0/\*
 2. Look and measure the direction of the angle as described earlier. 
 3. Once you have got a good angle alignment, press F3 and C to copy your player position.
 4. Check the calculator to see the top 5 results. Each result will have a confidence level describing how likely it is to be the correct position. This will be under the % tab.
+   <img width="717" height="205" alt="image" src="https://github.com/user-attachments/assets/952043e6-5509-47a1-b6da-739c5ecfe3fe" />
+
 5. If the number is not decently confident (like 60+%), then you can move some distance away (like 100 or so blocks, but it depends on your coordinates) and repeat the steps above.
-6. Once you have a measurement you are confident in you can lock the measurement with the lock button. Now when you F3+C, it will instead tell you the updated distance and angle of travel between you and each predicted stronghold location. You can press "Unlock" (the lock button text will change to unlock) to measure as normal. 
+ <img width="712" height="236" alt="image" src="https://github.com/user-attachments/assets/0c922b73-4741-40b2-92de-f88e53c7931d" />
+  
+6. Once you have a measurement you are confident in you can lock the measurement with the lock button. Now when you F3+C, it will instead tell you the updated distance and angle of travel between you and each predicted stronghold location. You can press "Unlock" (the lock button text will change to unlock) to measure as normal.
+   <img width="721" height="445" alt="image" src="https://github.com/user-attachments/assets/e0688eb8-2b1a-48e1-914e-e381f5de35fe" />
+
 7. If you want to find the location of a different stronghold, click reset to clear the previous data and use as normal.
 
 ### Extra tips <a id="CalcExtraTips" name="CalcExtraTips"></a>
@@ -216,7 +228,8 @@ This is only accounted for when we are trying to find a closer stronghold in the
 
 If you want a video tutorial on how to use it, check out the same tutorial video as before. There will be a video demonstration of how to use that part there. If you want a text walkthrough. Keep reading onwards. 
 
-1. Open the program and click on seed finder. 
+1. Open the program and click on Seed Finder. 
+<img width="723" height="443" alt="image" src="https://github.com/user-attachments/assets/8909505b-09e1-4aba-bf71-1426e2c4ca9a" />
 2. Select the seed type which you want to search for and click Submit.
 3. Wait a while for the program to find a valid seed. 
 4. Once a valid seed has been found:
