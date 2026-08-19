@@ -350,7 +350,7 @@ def main_probabilistic():
 	while True:
 		print("waiting one")
 		keyboard.wait("f3+c")
-		time.sleep(0.02)
+		time.sleep(0.05)
 		command1 = read_clipboard()
 
 		if command1 != "invalid":

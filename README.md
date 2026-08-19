@@ -31,6 +31,7 @@ I also added a FSG filter for 1.16.1 becuase I thought it would be fun thing to 
    3. [Buried Treasure](#BuriedTreasure)
    4. [Shipwreck](#Shipwreck)
    5. [Ruined Portal](#RuinedPortal)
+   6. [Bastion](#Bastion)
 
 ---
 

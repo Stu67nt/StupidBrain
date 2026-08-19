@@ -19,7 +19,7 @@ class MainWindow(QtWidgets.QWidget):
 	def __init__(self, g_set):
 		super().__init__()
 
-		self.setFixedSize(545, 335)
+		self.setFixedSize(585, 335)
 		self.setWindowOpacity(0.95)
 		self.setWindowTitle("StupidBrain Calc")
 		self.setWindowIcon(QIcon("assets/icon.png"))

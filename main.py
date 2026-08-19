@@ -55,24 +55,17 @@ class Calc(QtCore.QRunnable):
 
 		for i, pos in enumerate(self.results):
 			if dimension == "the_nether":
-				n_x, n_z = nether_coords(pos[0], pos[1])
-				distance = math.sqrt(pow((x - n_x), 2) + pow((z - n_z), 2))
-				curr_trav_angle = math.degrees(math.atan2(-(x - n_x), (z - n_z)))
-				trav_face_diff = standarise_degrees(yaw)-standarise_degrees(curr_trav_angle)
-				trav_face_diff = (trav_face_diff + 180) % 360 - 180
-				angle_shift = f" <= {abs(round(trav_face_diff, 1))}" if trav_face_diff >= 0 else f" => {abs(round(trav_face_diff, 1))}"
-				display_lock.append([QTableWidgetItem(str((pos[0], pos[1]))), QTableWidgetItem(str(round(pos[4] * 100, 2))),
-						 QTableWidgetItem(str(round(distance))), QTableWidgetItem(str(nether_coords(pos[0], pos[1]))),
-						 QTableWidgetItem(f"{round(curr_trav_angle, 1)}  ({angle_shift})")])
+				x1, z1 = nether_coords(pos[0], pos[1])
 			else:
-				distance = math.sqrt(pow(x - pos[0], 2) + pow(z - pos[1], 2))
-				curr_trav_angle = math.degrees(math.atan2(-(pos[0]-x), (pos[1]-z)))
-				trav_face_diff = standarise_degrees(yaw) - standarise_degrees(curr_trav_angle)
-				trav_face_diff = (trav_face_diff + 180) % 360 - 180
-				angle_shift = f" <= {abs(round(trav_face_diff, 1))}" if trav_face_diff >= 0 else f" => {abs(round(trav_face_diff, 1))}"
-				display_lock.append([QTableWidgetItem(str((pos[0], pos[1]))), QTableWidgetItem(str(round(pos[4] * 100, 2))),
-						 QTableWidgetItem(str(round(distance))), QTableWidgetItem(str(nether_coords(pos[0], pos[1]))),
-						 QTableWidgetItem(f"{round(curr_trav_angle, 1)}  ({angle_shift})")])
+				x1, z1 = pos[0], pos[1]
+			distance = math.sqrt(pow(x - x1, 2) + pow(z - z1, 2))
+			curr_trav_angle = math.degrees(math.atan2(-(x1 - x), (z1 - z)))
+			trav_face_diff = standarise_degrees(yaw) - standarise_degrees(curr_trav_angle)
+			trav_face_diff = (trav_face_diff + 180) % 360 - 180
+			angle_shift = f" <= {abs(round(trav_face_diff, 1))}" if trav_face_diff >= 0 else f" => {abs(round(trav_face_diff, 1))}"
+			display_lock.append([QTableWidgetItem(str((pos[0], pos[1]))), QTableWidgetItem(str(round(pos[4] * 100, 2))),
+					 QTableWidgetItem(str(round(distance))), QTableWidgetItem(str(nether_coords(pos[0], pos[1]))),
+					 QTableWidgetItem(f"{round(curr_trav_angle, 1)}  ({angle_shift})")])
 		return display_lock
 
 
@@ -85,7 +78,7 @@ class Calc(QtCore.QRunnable):
 				keyboard.wait("f3+c")
 			except:
 				pass
-			time.sleep(0.02)
+			time.sleep(0.05)
 			command1 = read_clipboard()
 			print(self.changing_dev)
 			if command1 != "invalid":

@@ -34,7 +34,7 @@ class StrdDevCalc(QtCore.QRunnable):
 				pass
 			if not self.is_running:
 				break
-			time.sleep(0.02)
+			time.sleep(0.05)
 			command1 = read_clipboard()
 			if command1 != "invalid" and self.is_running:
 				x, y, z, yaw, pitch = command1
@@ -98,7 +98,7 @@ def ting():
 	while True:
 		print("waiting one")
 		keyboard.wait("f3+c")
-		time.sleep(0.02)
+		time.sleep(0.05)
 		command1 = read_clipboard()
 
 		if command1 != "invalid":
