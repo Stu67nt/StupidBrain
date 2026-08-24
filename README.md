@@ -115,11 +115,11 @@ To measure the eye, I recommend you lower FOV to 30 and your sensitivity to 0/\*
 1. Throw an eye of ender, which will point in the direction of the stronghold.
 2. Look and measure the direction of the angle as described earlier. 
 3. Once you have got a good angle alignment, press F3 and C to copy your player position.
-4. Check the calculator to see the top 5 results. Each result will have a confidence level describing how likely it is to be the correct position. This will be under the % tab.
+4. Check the calculator to see the top 5 results. Each result will have a confidence level describing how likely it is to be the correct position. This will be under the % tab.  
    <img width="717" height="205" alt="image" src="https://github.com/user-attachments/assets/952043e6-5509-47a1-b6da-739c5ecfe3fe" />
 
-5. If the number is not decently confident (like 60+%), then you can move some distance away (like 100 or so blocks, but it depends on your coordinates) and repeat the steps above.
- <img width="712" height="236" alt="image" src="https://github.com/user-attachments/assets/0c922b73-4741-40b2-92de-f88e53c7931d" />
+5. If the number is not decently confident (like 60+%), then you can move some distance away (like 100 or so blocks, but it depends on your coordinates) and repeat the steps above.  
+   <img width="712" height="236" alt="image" src="https://github.com/user-attachments/assets/0c922b73-4741-40b2-92de-f88e53c7931d" />
   
 6. Once you have a measurement you are confident in you can lock the measurement with the lock button. Now when you F3+C, it will instead tell you the updated distance and angle of travel between you and each predicted stronghold location. You can press "Unlock" (the lock button text will change to unlock) to measure as normal.
    <img width="721" height="445" alt="image" src="https://github.com/user-attachments/assets/e0688eb8-2b1a-48e1-914e-e381f5de35fe" />
@@ -194,11 +194,11 @@ This randomly decides how far away from (0, 0) the strongholds should be placed 
 Afterwards, the stronghold does 2 different snaps. One to the 8,8 coordinate of the chunk. Another will be a biome snap where it tries to search for a valid place to place the stronghold anywhere between 0 and 128√2 blocks in any direction.  
 ![snapoffset.png](RMassets/snapoffset.png)
 
-Now that we know how the strongholds are placed, I want to jump a bit ahead to how the measurement error is accounted for because it makes a lot more sense chronologically. The measurement error essentially deciding how accurate your measurement is and how much it should be trusted.
+Now that we know how the strongholds are placed, I want to jump a bit ahead to how the measurement error is accounted for because it makes a lot more sense chronologically. The measurement error essentially determines how accurate your measurement is and how much it should be trusted.
 
 That's why we add in some extra math to account for the errors we get with both Minecraft and human imprecision.
 
-This first line here basically means we are going to create a massive set with every possible coordinate the eye could be pointing to. This is possible because there are a pretty finite number of places where one can spawn. Only (8, 8) coordinates in a chunk, which is in one of the ring regions. 
+This first line here basically means we are going to create a massive set with every possible coordinate the eye could be pointing to. This is possible because there are a pretty finite number of places where one can spawn. Only (8, 8) coordinates in a chunk, which is in one of the ring regions.  
 ![g_set_init.png](RMassets/g_set_init.png)  
 
 When we read the player's measurement of the eye of ender angle, we assume it is [normally distributed](https://en.wikipedia.org/wiki/Normal_distribution) with the standard deviation being a value they themselves select. The standard deviation should be how much the player's measurements vary by when they measure the eye. The mean for the distribution is 0 (a perfect measurement). This is because a player's measurements should vary equal amounts to the left and right. The normal distribution is calculated as a [PDF](https://en.wikipedia.org/wiki/Probability_density_function). We add this to the theoretically perfect angle between you and the stronghold. This math is then repeated for every throw as well as for each chunk in the set G. Then we apply [Bayes' Theorem](https://en.wikipedia.org/wiki/Bayes%27_theorem) to update our probabilities as more eyes are thrown.   
@@ -215,7 +215,7 @@ This is some math saying what is the chance of the zone we calculated earlier in
 Umm, we take them out back and pretend they never existed cause that is too complicated with literally no payoff. Fun fact. We do not NEED to be insanely precise for this integral, we can approximate them and take quite a few shortcuts here and achieve good enough results.  
 One such approxiation is utilising Simpson's rule for approximating integrals. Another one is not calculating for the entire set instead only doing so for relevant reigons. These bring our times to calulate from heat death of the universe down to about 2 ish seconds. 
 
-There are other aspects of this paper that I have also chosen to not consider due to them overcomplicating the math with not a siginificant enough return. One example of this is the Beta disribution.
+There are other aspects of this paper that I have also chosen to not consider due to them overcomplicating the math with not a siginificant enough return. One example of this is the Beta disribution.  
 ![img.png](RMassets/betadist.png)
 
 This is only accounted for when we are trying to find a closer stronghold in the same place as the candidate stronghold. However, this is quite unlikely due to the way strongholds spawn with the angling so we opt to pretend that this won't happen as it compicates the code and increases runtime. Both of which I cannot afford atp tbh.
@@ -228,7 +228,7 @@ This is only accounted for when we are trying to find a closer stronghold in the
 
 If you want a video tutorial on how to use it, check out the same tutorial video as before. There will be a video demonstration of how to use that part there. If you want a text walkthrough. Keep reading onwards. 
 
-1. Open the program and click on Seed Finder. 
+1. Open the program and click on Seed Finder.  
 <img width="723" height="443" alt="image" src="https://github.com/user-attachments/assets/8909505b-09e1-4aba-bf71-1426e2c4ca9a" />
 
 2. Select the seed type which you want to search for and click Submit.  
