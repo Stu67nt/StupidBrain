@@ -230,9 +230,10 @@ If you want a video tutorial on how to use it, check out the same tutorial video
 
 1. Open the program and click on Seed Finder. 
 <img width="723" height="443" alt="image" src="https://github.com/user-attachments/assets/8909505b-09e1-4aba-bf71-1426e2c4ca9a" />
-2. Select the seed type which you want to search for and click Submit.
-3. Wait a while for the program to find a valid seed. 
-4. Once a valid seed has been found:
+
+2. Select the seed type which you want to search for and click Submit.  
+3. Wait a while for the program to find a valid seed.  
+4. Once a valid seed has been found:  
    1. Open Minecraft 1.16.1
    2. Select "Create New World"
    3. Select "More world options"
