@@ -4,6 +4,10 @@ A Minecraft stronghold calculator which utilises a Bayesian statistics method of
 
 I also added a FSG filter for 1.16.1 because I thought it would be a fun thing to have in the project. It can filter for the 5 main seed types (Village, Shipwreck, Desert Temple, Buried Treasure and Ruined Portal)
 
+## Video Demo
+
+[![Click for the video](https://img.youtube.com/vi/bjHQqKF0b-Y/0.jpg)](https://www.youtube.com/watch?v=bjHQqKF0b-Y)
+
 ## Table of Contents
 
 [Prerequisites](#Prerequisites)  
@@ -44,12 +48,14 @@ Note that to use this program, you will need the following:
 
  - Windows 11 device
  - Minecraft Java Edition 1.16.1
+ - Java 21+ Runtime Environment 
  - The program itself
  - OBS is sometimes helpful but not needed
 
 ### How to Download <a id="Download Instructions" name="DownloadInstructions"></a>
-To download, click on the GitHub Release and download the main.zip.  
-Then you need to extract the zip, open the folder, and run main.exe.
+1. Ensure you have Java 21 or later installed. If not, you can install it [here](https://www.oracle.com/uk/java/technologies/downloads/#jdk26-windows) 
+2. To download, click on the GitHub Release and download the main.zip.  
+3. Then you need to extract the zip, open the folder, and run main.exe.
 
 If you want to build from source, do the following:
 
@@ -72,9 +78,8 @@ If you want to build from source, do the following:
 
 ## Usage Guide <a id="CalcUsageGuide" name="CalcUsageGuide"></a>
 
-I have prepared a video, shown below, to showcase how to use this calculator properly in order to set it up so you can begin measuring eyes. 
-
-[![Click for the video](https://img.youtube.com/vi/bjHQqKF0b-Y/0.jpg)](https://www.youtube.com/watch?v=bjHQqKF0b-Y)
+If you want a video demo of all the features, please check the video at the top of the README to showcase how to use this calculator properly, in order to set it up so you can begin measuring eyes.  
+If you instead prefer to read the guide below, read ahead. 
 
 ### Setting the Standard Deviation <a id="SettingStrdDev" name="SettingStrdDev"></a>
 
@@ -226,7 +231,7 @@ This is only accounted for when we are trying to find a closer stronghold in the
 
 ## Usage Guide <a id="SeedUsageGuide" name="SeedUsageGuide"></a>
 
-If you want a video tutorial on how to use it, check out the same tutorial video as before. There will be a video demonstration of how to use that part there. If you want a text walkthrough. Keep reading onwards. 
+If you want a video tutorial on how to use it, check out the same tutorial video as before. There will be a video demonstration of how to use that part. If you want a text walkthrough. Keep reading onward. 
 
 1. Open the program and click on Seed Finder.  
 <img width="723" height="443" alt="image" src="https://github.com/user-attachments/assets/8909505b-09e1-4aba-bf71-1426e2c4ca9a" />
